@@ -4,5 +4,5 @@
 #### Project done by:
 
 #### Priboi Andrei (andreiprb)
-#### Tudose Alexandru Vasule (Chewdoughsay)
+#### Tudose Alexandru Vasile (Chewdoughsay)
 #### Vilcu Andreea (andreeavilcu)
