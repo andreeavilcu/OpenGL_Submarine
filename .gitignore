@@ -486,3 +486,6 @@ docs/
 
 # CLang/LLVM specific
 *.dSYM
+
+*.pbxproj
+*.xcscheme
