@@ -396,3 +396,93 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# fox XCode ------------------------------------------
+# Compiled Object files
+*.o
+*.obj
+
+# Compiled Static libraries
+*.lib
+*.a
+
+# Compiled Dynamic libraries
+*.so
+*.dll
+*.dylib
+
+# Executable files
+*.exe
+*.out
+*.app
+
+# Debug and Release directories
+[Dd]ebug/
+[Rr]elease/
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build/
+*.ninja
+*.sln
+*.vcxproj*
+*.vcproj*
+
+# Qt files
+*.moc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+
+# Code::Blocks files
+*.depend
+*.layout
+
+# CodeLite files
+*.tags
+*.database
+
+# CLion files
+.idea/
+cmake-build-*/
+
+# Xcode-specific files
+.DS_Store
+*.xcworkspace
+*.xcuserstate
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/xcshareddata/**/*
+
+# Other temporary files
+*.log
+*.tmp
+*.cache
+*.swp
+*~
+
+# Archives
+*.tar
+*.gz
+*.zip
+*.7z
+*.rar
+
+# Coverage files
+*.gcno
+*.gcda
+*.gcov
+
+# Test result files
+*.testlog
+
+# Generated documentation
+doc/
+docs/
+
+# CLang/LLVM specific
+*.dSYM
