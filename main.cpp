@@ -1,20 +1,41 @@
-// ViewOBJModel.cpp : This file contains the 'main' function. Program execution begins and ends there.
-
-#include <Windows.h>
 #include <locale>
 #include <codecvt>
+#include <unistd.h>
 
-#include <stdlib.h> // necesare pentru citirea shader-elor
+#include <stdlib.h>
 #include <stdio.h>
-#include <math.h> 
+#include <math.h>
 
 #include <GL/glew.h>
+
+#ifdef __APPLE__
+
+#define MAX_PATH 260
+
+#include <glm/GLM.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <GLFW/glfw3.h>
+
+std::wstring convertToWide(const char* input) {
+    size_t length = std::strlen(input) + 1;
+    std::wstring wideString(length, L'\0');
+    std::mbstowcs(&wideString[0], input, length);
+    return wideString;
+}
+
+#else
+
+#include <Windows.h>
 
 #include <GLM.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
 #include <glfw3.h>
+
+#endif
 
 #include <iostream>
 #include <fstream>
@@ -197,7 +218,7 @@ private:
 		//std::cout << "yaw = " << yaw << std::endl;
 		//std::cout << "pitch = " << pitch << std::endl;
 
-		// Avem grijã sã nu ne dãm peste cap
+		// Avem grijâ€ž sâ€ž nu ne dâ€žm peste cap
 		if (constrainPitch) {
 			if (pitch > 89.0f)
 				pitch = 89.0f;
@@ -205,7 +226,7 @@ private:
 				pitch = -89.0f;
 		}
 
-		// Se modificã vectorii camerei pe baza unghiurilor Euler
+		// Se modificâ€ž vectorii camerei pe baza unghiurilor Euler
 		UpdateCameraVectors();
 	}
 
@@ -403,26 +424,45 @@ int main()
 	glm::vec3 lightPos(0.0f, 2.0f, 1.0f);
 	glm::vec3 cubePos(0.0f, 5.0f, 1.0f);
 
-	wchar_t buffer[MAX_PATH];
-	GetCurrentDirectoryW(MAX_PATH, buffer);
+    wchar_t buffer[MAX_PATH];
+    char charBuf[MAX_PATH];
 
-	std::wstring executablePath(buffer);
-	std::wstring wscurrentPath = executablePath.substr(0, executablePath.find_last_of(L"\\/"));
+#ifdef __APPLE__
+
+    if (getcwd(charBuf, sizeof(charBuf)) != nullptr) {
+        std::wstring widePath = convertToWide(charBuf);
+
+        std::wcsncpy(buffer, widePath.c_str(), PATH_MAX);
+
+        std::wcout << L"Directorul curent este: " << buffer << std::endl;
+    } else {
+        perror("Eroare la obÈ›inerea directorului curent");
+    }
+    
+    std::wstring executablePath(buffer);
+    std::wstring wscurrentPath = executablePath;
+
+#else
+
+    GetCurrentDirectoryW(MAX_PATH, buffer);
+    
+    std::wstring executablePath(buffer);
+    std::wstring wscurrentPath = executablePath.substr(0, executablePath.find_last_of(L"\\/"));
+
+#endif
+
 
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 	std::string currentPath = converter.to_bytes(wscurrentPath);
 
-	Shader lightingShader((currentPath + "\\Shaders\\PhongLight.vs").c_str(), (currentPath + "\\Shaders\\PhongLight.fs").c_str());
-	Shader lightingWithTextureShader((currentPath + "\\Shaders\\PhongLightWithTexture.vs").c_str(), (currentPath + "\\Shaders\\PhongLightWithTexture.fs").c_str());
-	Shader lampShader((currentPath + "\\Shaders\\Lamp.vs").c_str(), (currentPath + "\\Shaders\\Lamp.fs").c_str());
+	Shader lightingShader((currentPath + "/Shaders/PhongLight.vs").c_str(), (currentPath + "/Shaders/PhongLight.fs").c_str());
+	Shader lightingWithTextureShader((currentPath + "/Shaders/PhongLightWithTexture.vs").c_str(), (currentPath + "/Shaders/PhongLightWithTexture.fs").c_str());
+	Shader lampShader((currentPath + "/Shaders/Lamp.vs").c_str(), (currentPath + "/Shaders/Lamp.fs").c_str());
 
-	std::string objFileName = (currentPath + "\\Models\\Submarine.obj");
+	std::string objFileName = (currentPath + "/Models/Submarine.obj");
 	FlyingCube flyingCubeModel(objFileName, false);
 
-	//std::string piratObjFileName = (currentPath + "\\Models\\Pirat\\Pirat.obj");
-	//Model piratObjModel(piratObjFileName, false);
-
-	std::string grassLawnObjFileName = (currentPath + "\\Models\\GrassLawn\\GrassLawn.obj");
+	std::string Â§nObjFileName = (currentPath + "/Models/GrassLawn/GrassLawn.obj");
 	Model grassLawnObjModel(grassLawnObjFileName, false);
 
 

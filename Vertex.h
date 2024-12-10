@@ -1,5 +1,5 @@
 #pragma once
-#include <glm.hpp>
+#include <glm/GLM.hpp>
 
 #define MAX_BONE_INFLUENCE 4
 

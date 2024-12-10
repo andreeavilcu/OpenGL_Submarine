@@ -1,5 +1,10 @@
 #include "FlyingCube.h"
+
+#ifdef __APPLE__
+#include <GLFW/glfw3.h>
+#else
 #include <glfw3.h>
+#endif
 
 FlyingCube::FlyingCube(string const& path, bool bSmoothNormals, bool gamma) : 
    Model(path, bSmoothNormals, gamma)
