@@ -1,6 +1,16 @@
 #pragma once
+
+#ifdef __APPLE__
+
 #include <glm/GLM.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#else
+
+#include <GLM.hpp>
+#include <gtc/matrix_transform.hpp>
+
+#endif
 
 #include "Shader.h"
 #include "Texture.h"

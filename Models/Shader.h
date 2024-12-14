@@ -5,7 +5,16 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+
+#ifdef __APPLE__
+
 #include <glm/GLM.hpp>
+
+#else
+
+#include <GLM.hpp>
+
+#endif
 
 
 class Shader

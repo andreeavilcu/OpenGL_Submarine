@@ -1,5 +1,14 @@
 #pragma once
+
+#ifdef __APPLE__
+
 #include <glm/GLM.hpp>
+
+#else
+
+#include <GLM.hpp>
+
+#endif
 
 #define MAX_BONE_INFLUENCE 4
 
