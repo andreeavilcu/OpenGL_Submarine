@@ -396,6 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+<<<<<<< HEAD
 
 # fox XCode ------------------------------------------
 # Compiled Object files
@@ -489,3 +490,5 @@ docs/
 
 *.pbxproj
 *.xcscheme
+=======
+>>>>>>> parent of 81aefc6 (Update .gitignore)
