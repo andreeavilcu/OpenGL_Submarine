@@ -37,5 +37,7 @@ private:
 	void SetupBuffers();
 	void SetupShaders();
 	void LoadModels();
+
+	void MouseCallback(double xpos, double ypos);
 };
 

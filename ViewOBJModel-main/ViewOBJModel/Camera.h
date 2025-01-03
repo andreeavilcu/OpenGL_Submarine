@@ -14,6 +14,7 @@ public:
 	void ProcessKeyboard(int direction, float deltaTime);
 	void MouseControl(float xPos, float yPos);
 	void ProcessMouseScroll(float yOffset);
+	void LockMouseToCenter(bool locked) { mouseLocked = locked; }
 
 private:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
@@ -46,4 +47,5 @@ private:
 
 	bool bFirstMouseMove = true;
 	float lastX = 0.f, lastY = 0.f;
+	bool mouseLocked = false;
 };

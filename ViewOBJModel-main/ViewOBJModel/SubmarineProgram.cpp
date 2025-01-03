@@ -22,6 +22,12 @@ void SubmarineProgram::Initialize() {
     SetupBuffers();
     SetupShaders();
     LoadModels();
+
+    glfwSetWindowUserPointer(window, this);
+    glfwSetCursorPosCallback(window, [](GLFWwindow* w, double x, double y) {
+        static_cast<SubmarineProgram*>(glfwGetWindowUserPointer(w))->MouseCallback(x, y);
+        });
+
 }
 
 void SubmarineProgram::SetupBuffers() {
@@ -114,6 +120,11 @@ void SubmarineProgram::LoadModels() {
 
     std::string helicopterObjFileName = currentPath + "\\Models\\Helicopter\\uh60.dae";
     helicopterModel = new Model(helicopterObjFileName, false);
+}
+
+void SubmarineProgram::MouseCallback(double xpos, double ypos)
+{
+    camera->MouseControl(xpos, ypos);
 }
 
 void SubmarineProgram::Run() {
