@@ -13,6 +13,15 @@
 #include "Model.h"
 #include "Camera.h"
 
+#include <iostream>
+#ifdef __APPLE__
+#define MAX_PATH 260
+#else
+#include <Windows.h>
+#endif
+#include <locale>
+#include <codecvt>
+
 class SubmarineProgram {
 public:
 	SubmarineProgram(GLFWwindow* window);

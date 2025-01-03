@@ -1,12 +1,5 @@
 #include "SubmarineProgram.h"
-#include <iostream>
-#ifdef __APPLE__
-#define MAX_PATH 260
-#else
-#include <Windows.h>
-#endif
-#include <locale>
-#include <codecvt>
+
 
 SubmarineProgram::SubmarineProgram(GLFWwindow* window) :
     window(window),
