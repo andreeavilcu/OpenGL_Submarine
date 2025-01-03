@@ -492,3 +492,5 @@ docs/
 *.xcscheme
 =======
 >>>>>>> parent of 81aefc6 (Update .gitignore)
+
+/ViewOBJMOdel-main/_external
