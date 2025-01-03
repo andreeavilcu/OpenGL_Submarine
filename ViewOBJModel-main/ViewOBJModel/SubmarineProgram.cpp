@@ -108,8 +108,8 @@ void SubmarineProgram::LoadModels() {
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
     std::string currentPath = converter.to_bytes(wscurrentPath);
 
-    std::string piratObjFileName = currentPath + "\\Models\\Pirat\\Pirat.obj";
-    piratModel = new Model(piratObjFileName, false);
+    std::string submarineObjFileName = currentPath + "\\Models\\Submarine\\Submarine.obj";
+    submarineModel = new Model(submarineObjFileName, false);
 
 }
 
@@ -181,9 +181,9 @@ void SubmarineProgram::RenderScene() {
     lightingWithTextureShader->setMat4("projection", camera->GetProjectionMatrix());
     lightingWithTextureShader->setMat4("view", camera->GetViewMatrix());
 
-    glm::mat4 piratModelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(1.f));
-    lightingWithTextureShader->setMat4("model", piratModelMatrix);
-    piratModel->Draw(*lightingWithTextureShader);
+    glm::mat4 submarineModelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(1.f));
+    lightingWithTextureShader->setMat4("model", submarineModelMatrix);
+    submarineModel->Draw(*lightingWithTextureShader);
 
     lampShader->use();
     lampShader->setMat4("projection", camera->GetProjectionMatrix());
@@ -201,7 +201,7 @@ void SubmarineProgram::Cleanup() {
     delete lightingShader;
     delete lightingWithTextureShader;
     delete lampShader;
-    delete piratModel;
+    delete submarineModel;
 
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightVAO);

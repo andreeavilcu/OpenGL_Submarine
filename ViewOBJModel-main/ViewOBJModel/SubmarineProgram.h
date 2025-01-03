@@ -22,7 +22,7 @@ private:
 
 	unsigned int VBO, cubeVAO, lightVAO;
 	Shader* lightingShader, * lightingWithTextureShader, * lampShader;
-	Model* piratModel;
+	Model* submarineModel;
 
 	glm::vec3 lightPos;
 	glm::vec3 cubePos;
