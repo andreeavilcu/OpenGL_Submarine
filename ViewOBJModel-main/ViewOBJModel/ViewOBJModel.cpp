@@ -14,7 +14,6 @@
 #include <sstream>
 #include "Shader.h"
 #include "Model.h"
-#include "FlyingCube.h"
 #include "SubmarineProgram.h"
 
 #pragma comment (lib, "glfw3dll.lib")

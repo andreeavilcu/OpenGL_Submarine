@@ -8,8 +8,7 @@ SubmarineProgram::SubmarineProgram(GLFWwindow* window) :
     window(window),
     deltaTime(0.0),
     lastFrame(0.0),
-    lightPos(0.0f, 2.0f, 1.0f),
-    cubePos(0.0f, 5.0f, 1.0f)
+    lightPos(0.0f, 2.0f, 1.0f)
 {
     camera = new Camera(800, 600, glm::vec3(0.0, 0.0, 3.0));
 }
@@ -109,17 +108,9 @@ void SubmarineProgram::LoadModels() {
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
     std::string currentPath = converter.to_bytes(wscurrentPath);
 
-    std::string objFileName = currentPath + "\\Models\\FlyingCube.obj";
-    flyingCubeModel = new FlyingCube(objFileName, false);
-
     std::string piratObjFileName = currentPath + "\\Models\\Pirat\\Pirat.obj";
     piratModel = new Model(piratObjFileName, false);
 
-    std::string grassLawnObjFileName = currentPath + "\\Models\\grass_lawn\\grass_lawn.obj";
-    grassLawnModel = new Model(grassLawnObjFileName, false);
-
-    std::string helicopterObjFileName = currentPath + "\\Models\\Helicopter\\uh60.dae";
-    helicopterModel = new Model(helicopterObjFileName, false);
 }
 
 void SubmarineProgram::MouseCallback(double xpos, double ypos)
@@ -172,9 +163,6 @@ void SubmarineProgram::RenderScene() {
     lightPos.x = 2.5f * cos(glfwGetTime());
     lightPos.z = 2.5f * sin(glfwGetTime());
 
-    cubePos.x = 10.0f * sin(glfwGetTime());
-    cubePos.z = 10.0f * cos(glfwGetTime());
-
     lightingShader->use();
     lightingShader->SetVec3("objectColor", 0.5f, 1.0f, 0.31f);
     lightingShader->SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
@@ -183,11 +171,6 @@ void SubmarineProgram::RenderScene() {
 
     lightingShader->setMat4("projection", camera->GetProjectionMatrix());
     lightingShader->setMat4("view", camera->GetViewMatrix());
-
-    glm::mat4 model = glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
-    model = glm::translate(model, cubePos);
-    flyingCubeModel->SetRootTransf(model);
-    flyingCubeModel->Draw(*lightingShader);
 
     lightingWithTextureShader->use();
     lightingWithTextureShader->SetVec3("objectColor", 0.5f, 1.0f, 0.31f);
@@ -201,14 +184,6 @@ void SubmarineProgram::RenderScene() {
     glm::mat4 piratModelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(1.f));
     lightingWithTextureShader->setMat4("model", piratModelMatrix);
     piratModel->Draw(*lightingWithTextureShader);
-
-    glm::mat4 grassLawnModelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(1000.f, 1.f, 1000.f));
-    lightingWithTextureShader->setMat4("model", grassLawnModelMatrix);
-    grassLawnModel->Draw(*lightingWithTextureShader);
-
-    glm::mat4 helicopterModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.f, 0.f, 0.f));
-    lightingWithTextureShader->setMat4("model", helicopterModelMatrix);
-    helicopterModel->Draw(*lightingWithTextureShader);
 
     lampShader->use();
     lampShader->setMat4("projection", camera->GetProjectionMatrix());
@@ -226,10 +201,7 @@ void SubmarineProgram::Cleanup() {
     delete lightingShader;
     delete lightingWithTextureShader;
     delete lampShader;
-    delete flyingCubeModel;
     delete piratModel;
-    delete grassLawnModel;
-    delete helicopterModel;
 
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightVAO);

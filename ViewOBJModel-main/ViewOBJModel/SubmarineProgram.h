@@ -5,7 +5,6 @@
 #include <gtc/matrix_transform.hpp>
 #include "Shader.h"
 #include "Model.h"
-#include "FlyingCube.h"
 #include "Camera.h"
 
 class SubmarineProgram {
@@ -23,8 +22,7 @@ private:
 
 	unsigned int VBO, cubeVAO, lightVAO;
 	Shader* lightingShader, * lightingWithTextureShader, * lampShader;
-	FlyingCube* flyingCubeModel;
-	Model* piratModel, * grassLawnModel, * helicopterModel;
+	Model* piratModel;
 
 	glm::vec3 lightPos;
 	glm::vec3 cubePos;
