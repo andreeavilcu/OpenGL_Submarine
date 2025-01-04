@@ -117,7 +117,7 @@ void SubmarineProgram::SetupShaders() {
     wchar_t buffer[MAX_PATH];
     GetCurrentDirectoryW(MAX_PATH, buffer);
     std::wstring executablePath(buffer);
-    std::wstring wscurrentPath = executablePath.substr(0, executablePath.find_last_of(L"//"));
+    std::wstring wscurrentPath = executablePath.substr(0, executablePath.find_last_of(L"\\/"));
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
     std::string currentPath = converter.to_bytes(wscurrentPath);
 #endif
