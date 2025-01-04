@@ -235,11 +235,21 @@ void SubmarineProgram::RenderScene() {
     lightingWithTextureShader->setMat4("projection", camera->GetProjectionMatrix());
     lightingWithTextureShader->setMat4("view", camera->GetViewMatrix());
     
+    glm::vec3 forward = camera->GetForward();
+    glm::vec3 up = camera->GetUp();
+
+    glm::mat4 rotationMatrix = glm::inverse(glm::lookAt(glm::vec3(0.0f), forward, up));
+    
     glm::mat4 submarineModelMatrix = glm::translate(glm::mat4(1.f), camera->GetPosition());
+    submarineModelMatrix *= rotationMatrix;
     submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, -.5f, -2.0f));
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(-3.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     lightingWithTextureShader->setMat4("model", submarineModelMatrix);
+    submarineModel->Draw(*lightingWithTextureShader);
+    
+    glm::mat4 test = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, -.5f, -2.0f));
+    lightingWithTextureShader->setMat4("model", test);
     submarineModel->Draw(*lightingWithTextureShader);
 
     glm::mat4 test = glm::mat4(1.f);

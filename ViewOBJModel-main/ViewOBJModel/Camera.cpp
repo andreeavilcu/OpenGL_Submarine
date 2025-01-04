@@ -61,6 +61,7 @@ const glm::mat4 Camera::GetProjectionMatrix() const {
 
 void Camera::ProcessKeyboard(int direction, float deltaTime) {
     float velocity = cameraSpeedFactor * deltaTime;
+
     switch (direction) {
         case 1: // FORWARD
             position += forward * velocity;
@@ -80,30 +81,38 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
         case 6: // DOWN
             position -= up * velocity;
             break;
-        case 7: {// LEFT ROTATE
-            float angle = glm::radians(-velocity * 50.f);
-            glm::vec3 center = position - forward * 2.0f;
-            float sinAngle = sin(angle);
-            float cosAngle = cos(angle);
-            glm::vec3 offset = position - center;
-            position.x = center.x + cosAngle * offset.x - sinAngle * offset.z;
-            position.z = center.z + sinAngle * offset.x + cosAngle * offset.z;
-            
-            forward = glm::normalize(-offset); // Actualizare direcție forward
+        case 7: {
+            glm::vec3 pivot = position + forward * -2.0f;
+
+            position -= pivot;
+
+            float angle = glm::radians(-45.0f) * velocity;
+            glm::mat4 rotMatrix = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0, 1, 0));
+
+            position = glm::vec3(rotMatrix * glm::vec4(position, 1.0f));
+
+            position += pivot;
+
+            yaw += glm::degrees(angle);
+
             UpdateCameraVectors();
             break;
         }
-        case 8: {// RIGHT ROTATE
-            float angle = glm::radians(velocity * 50.0f); // Ajustează viteza rotației
-            glm::vec3 center = position - forward * 2.0f; // Centru de rotație la distanța de 2 unități
-            float sinAngle = sin(angle);
-            float cosAngle = cos(angle);
             
-            glm::vec3 offset = position - center;
-            position.x = center.x + cosAngle * offset.x - sinAngle * offset.z;
-            position.z = center.z + sinAngle * offset.x + cosAngle * offset.z;
+        case 8: {
+            glm::vec3 pivot = position + forward * -2.0f;
+
+            position -= pivot;
             
-            forward = glm::normalize(-offset); // Actualizare direcție forward
+            float angle = glm::radians(45.0f) * velocity;
+            glm::mat4 rotMatrix = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0, 1, 0));
+
+            position = glm::vec3(rotMatrix * glm::vec4(position, 1.0f));
+
+            position += pivot;
+
+            yaw += glm::degrees(angle);
+
             UpdateCameraVectors();
             break;
         }
@@ -111,44 +120,50 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
 }
 
 void Camera::MouseControl(float xPos, float yPos) {
-    if (bFirstMouseMove) {
-        lastX = xPos;
-        lastY = yPos;
-        bFirstMouseMove = false;
-    }
-
-    float xChange = xPos - lastX;
-    float yChange = lastY - yPos;
-    lastX = xPos;
-    lastY = yPos;
-
-    if (fabs(xChange) <= 1e-6 && fabs(yChange) <= 1e-6) {
-        return;
-    }
-    xChange *= mouseSensitivity;
-    yChange *= mouseSensitivity;
-
-    ProcessMouseMovement(xChange, yChange);
+    return;
+    
+//    if (bFirstMouseMove) {
+//        lastX = xPos;
+//        lastY = yPos;
+//        bFirstMouseMove = false;
+//    }
+//
+//    float xChange = xPos - lastX;
+//    float yChange = lastY - yPos;
+//    lastX = xPos;
+//    lastY = yPos;
+//
+//    if (fabs(xChange) <= 1e-6 && fabs(yChange) <= 1e-6) {
+//        return;
+//    }
+//    xChange *= mouseSensitivity;
+//    yChange *= mouseSensitivity;
+//
+//    ProcessMouseMovement(xChange, yChange);
 }
 
 void Camera::ProcessMouseScroll(float yOffset) {
-    if (FoVy >= 1.0f && FoVy <= 90.0f) {
-        FoVy -= yOffset;
-    }
-    FoVy = FoVy <= 1.0f ? 1.0f : FoVy;
-    FoVy = FoVy >= 90.0f ? 90.0f : FoVy;
+    return;
+    
+//    if (FoVy >= 1.0f && FoVy <= 90.0f) {
+//        FoVy -= yOffset;
+//    }
+//    FoVy = FoVy <= 1.0f ? 1.0f : FoVy;
+//    FoVy = FoVy >= 90.0f ? 90.0f : FoVy;
 }
 
 void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch) {
-    yaw += xOffset;
-    pitch += yOffset;
-
-    if (constrainPitch) {
-        pitch = pitch > 89.0f ? 89.0f : pitch;
-        pitch = pitch < -89.0f ? -89.0f : pitch;
-    }
-
-    UpdateCameraVectors();
+    return;
+    
+//    yaw += xOffset;
+//    pitch += yOffset;
+//
+//    if (constrainPitch) {
+//        pitch = pitch > 89.0f ? 89.0f : pitch;
+//        pitch = pitch < -89.0f ? -89.0f : pitch;
+//    }
+//
+//    UpdateCameraVectors();
 }
 
 void Camera::UpdateCameraVectors() {

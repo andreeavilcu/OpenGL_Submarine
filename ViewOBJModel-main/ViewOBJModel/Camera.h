@@ -6,6 +6,7 @@
 #include <glm.hpp>
 #include <glfw3.h>
 #endif
+#include <iostream>
 
 class Camera {
 public:
@@ -20,6 +21,9 @@ public:
 	void MouseControl(float xPos, float yPos);
 	void ProcessMouseScroll(float yOffset);
 	void LockMouseToCenter(bool locked) { mouseLocked = locked; }
+    
+    glm::vec3 GetForward() { return glm::normalize(forward); }
+    glm::vec3 GetUp() { return glm::normalize(up); }
 
 private:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
