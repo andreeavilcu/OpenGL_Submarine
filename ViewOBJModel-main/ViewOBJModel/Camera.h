@@ -25,7 +25,7 @@ private:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
 	void UpdateCameraVectors();
 
-	const float cameraSpeedFactor = 50.0f;
+	const float cameraSpeedFactor = 1.f;
 	const float mouseSensitivity = 0.1f;
 	const float zNEAR = 0.1f;
 	const float zFAR = 500.f;

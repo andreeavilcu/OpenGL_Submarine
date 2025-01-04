@@ -62,24 +62,51 @@ const glm::mat4 Camera::GetProjectionMatrix() const {
 void Camera::ProcessKeyboard(int direction, float deltaTime) {
     float velocity = cameraSpeedFactor * deltaTime;
     switch (direction) {
-    case 1: // FORWARD
-        position += forward * velocity;
-        break;
-    case 2: // BACKWARD
-        position -= forward * velocity;
-        break;
-    case 3: // LEFT
-        position -= right * velocity;
-        break;
-    case 4: // RIGHT
-        position += right * velocity;
-        break;
-    case 5: // UP
-        position += up * velocity;
-        break;
-    case 6: // DOWN
-        position -= up * velocity;
-        break;
+        case 1: // FORWARD
+            position += forward * velocity;
+            break;
+        case 2: // BACKWARD
+            position -= forward * velocity;
+            break;
+        case 3: // LEFT
+            position -= right * velocity;
+            break;
+        case 4: // RIGHT
+            position += right * velocity;
+            break;
+        case 5: // UP
+            position += up * velocity;
+            break;
+        case 6: // DOWN
+            position -= up * velocity;
+            break;
+        case 7: {// LEFT ROTATE
+            float angle = glm::radians(-velocity * 50.f);
+            glm::vec3 center = position - forward * 2.0f;
+            float sinAngle = sin(angle);
+            float cosAngle = cos(angle);
+            glm::vec3 offset = position - center;
+            position.x = center.x + cosAngle * offset.x - sinAngle * offset.z;
+            position.z = center.z + sinAngle * offset.x + cosAngle * offset.z;
+            
+            forward = glm::normalize(-offset); // Actualizare direcție forward
+            UpdateCameraVectors();
+            break;
+        }
+        case 8: {// RIGHT ROTATE
+            float angle = glm::radians(velocity * 50.0f); // Ajustează viteza rotației
+            glm::vec3 center = position - forward * 2.0f; // Centru de rotație la distanța de 2 unități
+            float sinAngle = sin(angle);
+            float cosAngle = cos(angle);
+            
+            glm::vec3 offset = position - center;
+            position.x = center.x + cosAngle * offset.x - sinAngle * offset.z;
+            position.z = center.z + sinAngle * offset.x + cosAngle * offset.z;
+            
+            forward = glm::normalize(-offset); // Actualizare direcție forward
+            UpdateCameraVectors();
+            break;
+        }
     }
 }
 

@@ -4,6 +4,8 @@ out vec4 FragColor;
 in vec3 Normal;  
 in vec3 FragPos;
 in vec2 TexCoords;
+
+uniform float ambient;
   
 uniform vec3 lightPos; 
 uniform vec3 viewPos; 
@@ -19,7 +21,7 @@ void main()
     vec3 texColor = texture(texture_diffuse1, TexCoords).rgb;
 	
 	 // ambient
-    float ambientStrength = 0.3;
+    float ambientStrength = ambient;
     vec3 ambient = ambientStrength * lightColor;
   	
     // diffuse

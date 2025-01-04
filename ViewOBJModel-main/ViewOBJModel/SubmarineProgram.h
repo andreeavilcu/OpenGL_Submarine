@@ -27,6 +27,8 @@ class SubmarineProgram {
 public:
 	SubmarineProgram(GLFWwindow* window);
 	~SubmarineProgram();
+    
+    void UpdateCameraFollowSubmarine(const glm::vec3& submarinePosition);
 
 	void Initialize();
 	void Run();
@@ -36,8 +38,8 @@ private:
 	GLFWwindow* window;
 	Camera* camera;
 
-	unsigned int VBO, cubeVAO, lightVAO;
-	Shader* lightingShader, * lightingWithTextureShader, * lampShader;
+	unsigned int VBO, cubeVAO, lightVAO, skyboxVAO;
+	Shader* lightingWithTextureShader, * lampShader, * skyboxShader;
 	Model* submarineModel;
 
 	glm::vec3 lightPos;
