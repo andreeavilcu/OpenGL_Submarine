@@ -40,10 +40,12 @@ private:
 
 	unsigned int VBO, cubeVAO, lightVAO, skyboxVAO;
 	Shader* lightingWithTextureShader, * lampShader, * skyboxShader;
-	Model* submarineModel;
+	Model* submarineModel, * terrainModel;
 
 	glm::vec3 lightPos;
 	glm::vec3 cubePos;
+    
+    glm::vec3 subSavedLocation;
 
 	double deltaTime;
 	double lastFrame;

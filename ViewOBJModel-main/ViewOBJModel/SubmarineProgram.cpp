@@ -157,9 +157,8 @@ void SubmarineProgram::LoadModels() {
     std::string currentPath = converter.to_bytes(wscurrentPath);
 #endif
 
-    std::string submarineObjFileName = currentPath + "/Models/Submarine/Submarine.obj";
-    submarineModel = new Model(submarineObjFileName, false);
-
+    submarineModel = new Model(currentPath + "/Models/Submarine/Submarine.obj", false);
+    terrainModel = new Model(currentPath + "/Models/terrain/terrain.obj", false);
 }
 
 void SubmarineProgram::MouseCallback(double xpos, double ypos)
@@ -189,23 +188,38 @@ void SubmarineProgram::ProcessInput() {
         camera->ProcessKeyboard(1, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera->ProcessKeyboard(2, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera->ProcessKeyboard(3, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera->ProcessKeyboard(4, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-        camera->ProcessKeyboard(5, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-        camera->ProcessKeyboard(6, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-        camera->ProcessKeyboard(7, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-        camera->ProcessKeyboard(8, deltaTime);
+    
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        if (camera->getFreeLook()) camera->ProcessKeyboard(3, deltaTime);
+        else camera->ProcessKeyboard(7, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        if (camera->getFreeLook()) camera->ProcessKeyboard(4, deltaTime);
+        else camera->ProcessKeyboard(8, deltaTime);
+    }
 
-    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-        camera->Reset(width, height);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        camera->ProcessKeyboard(5, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        camera->ProcessKeyboard(6, deltaTime);
+    
+    static bool wasXPressed = false;
+    
+    bool xIsPressedNow = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
+
+    if (!xIsPressedNow && wasXPressed) {
+        if (camera->getFreeLook()) camera->Set(800, 600, subSavedLocation);
+        camera->changeFreeLook();
+    }
+    wasXPressed = xIsPressedNow;
+    
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+        if (camera->getFreeLook()) {
+            camera->Set(800, 600, subSavedLocation);
+            camera->changeFreeLook();
+        }
+        
+        camera->Reset(800, 600);
     }
 }
 
@@ -235,22 +249,30 @@ void SubmarineProgram::RenderScene() {
     lightingWithTextureShader->setMat4("projection", camera->GetProjectionMatrix());
     lightingWithTextureShader->setMat4("view", camera->GetViewMatrix());
     
+    glm::mat4 submarineModelMatrix = glm::mat4(1.f);
+    
+    if (!camera->getFreeLook()) {
+        subSavedLocation = camera->GetPosition();
+    }
+    
+    submarineModelMatrix = glm::translate(glm::mat4(1.f), subSavedLocation);
+    
     glm::vec3 forward = camera->GetForward();
     glm::vec3 up = camera->GetUp();
-
     glm::mat4 rotationMatrix = glm::inverse(glm::lookAt(glm::vec3(0.0f), forward, up));
-    
-    glm::mat4 submarineModelMatrix = glm::translate(glm::mat4(1.f), camera->GetPosition());
     submarineModelMatrix *= rotationMatrix;
-    submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, -.5f, -2.0f));
+    
+    submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, -.5f, -1.0f));
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(-3.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(-6.0f), glm::vec3(1.0f, 0.0f, .5f));
+    
     lightingWithTextureShader->setMat4("model", submarineModelMatrix);
     submarineModel->Draw(*lightingWithTextureShader);
     
-    glm::mat4 test = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, -.5f, -2.0f));
-    lightingWithTextureShader->setMat4("model", test);
-    submarineModel->Draw(*lightingWithTextureShader);
+    glm::mat4 terrainMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 5.0f, 15.f));
+    terrainMatrix = glm::scale(terrainMatrix, glm::vec3(.1f, .1f, .1f));
+    lightingWithTextureShader->setMat4("model", terrainMatrix);
+    terrainModel->Draw(*lightingWithTextureShader);
 
     lampShader->use();
     lampShader->setMat4("projection", camera->GetProjectionMatrix());

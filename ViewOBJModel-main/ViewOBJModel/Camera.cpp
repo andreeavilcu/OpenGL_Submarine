@@ -61,7 +61,8 @@ const glm::mat4 Camera::GetProjectionMatrix() const {
 
 void Camera::ProcessKeyboard(int direction, float deltaTime) {
     float velocity = cameraSpeedFactor * deltaTime;
-
+    UpdateCameraVectors();
+    
     switch (direction) {
         case 1: // FORWARD
             position += forward * velocity;
@@ -76,13 +77,15 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
             position += right * velocity;
             break;
         case 5: // UP
-            position += up * velocity;
+            position += worldUp * velocity;
             break;
         case 6: // DOWN
-            position -= up * velocity;
+            position -= worldUp * velocity;
             break;
         case 7: {
-            glm::vec3 pivot = position + forward * -2.0f;
+            if (freeLook) break;
+            
+            glm::vec3 pivot = position + forward * -1.0f;
 
             position -= pivot;
 
@@ -100,7 +103,9 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
         }
             
         case 8: {
-            glm::vec3 pivot = position + forward * -2.0f;
+            if (freeLook) break;
+            
+            glm::vec3 pivot = position + forward * -1.0f;
 
             position -= pivot;
             
@@ -120,26 +125,26 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
 }
 
 void Camera::MouseControl(float xPos, float yPos) {
-    return;
+    if (!freeLook) return;
     
-//    if (bFirstMouseMove) {
-//        lastX = xPos;
-//        lastY = yPos;
-//        bFirstMouseMove = false;
-//    }
-//
-//    float xChange = xPos - lastX;
-//    float yChange = lastY - yPos;
-//    lastX = xPos;
-//    lastY = yPos;
-//
-//    if (fabs(xChange) <= 1e-6 && fabs(yChange) <= 1e-6) {
-//        return;
-//    }
-//    xChange *= mouseSensitivity;
-//    yChange *= mouseSensitivity;
-//
-//    ProcessMouseMovement(xChange, yChange);
+    if (bFirstMouseMove) {
+        lastX = xPos;
+        lastY = yPos;
+        bFirstMouseMove = false;
+    }
+
+    float xChange = xPos - lastX;
+    float yChange = lastY - yPos;
+    lastX = xPos;
+    lastY = yPos;
+
+    if (fabs(xChange) <= 1e-6 && fabs(yChange) <= 1e-6) {
+        return;
+    }
+    xChange *= mouseSensitivity;
+    yChange *= mouseSensitivity;
+
+    ProcessMouseMovement(xChange, yChange);
 }
 
 void Camera::ProcessMouseScroll(float yOffset) {
@@ -153,17 +158,15 @@ void Camera::ProcessMouseScroll(float yOffset) {
 }
 
 void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch) {
-    return;
+    yaw += xOffset;
+    pitch += yOffset;
     
-//    yaw += xOffset;
-//    pitch += yOffset;
-//
-//    if (constrainPitch) {
-//        pitch = pitch > 89.0f ? 89.0f : pitch;
-//        pitch = pitch < -89.0f ? -89.0f : pitch;
-//    }
-//
-//    UpdateCameraVectors();
+    if (constrainPitch) {
+        pitch = pitch > 89.0f ? 89.0f : pitch;
+        pitch = pitch < -89.0f ? -89.0f : pitch;
+    }
+    
+    UpdateCameraVectors();
 }
 
 void Camera::UpdateCameraVectors() {

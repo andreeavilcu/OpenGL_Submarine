@@ -22,12 +22,45 @@ public:
 	void ProcessMouseScroll(float yOffset);
 	void LockMouseToCenter(bool locked) { mouseLocked = locked; }
     
-    glm::vec3 GetForward() { return glm::normalize(forward); }
+    glm::vec3 GetForward() {
+        if (!freeLook) return glm::normalize(forward);
+        
+        glm::vec3 fwd;
+        fwd.x = cos(glm::radians(yawCopy)) * cos(glm::radians(pitchCopy));
+        fwd.y = sin(glm::radians(pitchCopy));
+        fwd.z = sin(glm::radians(yawCopy)) * cos(glm::radians(pitchCopy));
+        fwd = glm::normalize(fwd);
+        
+        right = glm::normalize(glm::cross(fwd, worldUp));
+        up = glm::normalize(glm::cross(right, fwd));
+        
+        return fwd;
+    }
+    
     glm::vec3 GetUp() { return glm::normalize(up); }
+    
+    void changeFreeLook() {
+        if (freeLook) {
+            yaw = yawCopy;
+            pitch = pitchCopy;
+        }
+        
+        else {
+            yawCopy = yaw;
+            pitchCopy = pitch;
+        }
 
+        UpdateCameraVectors();
+        freeLook = !freeLook;
+    }
+    
+    bool getFreeLook() { return freeLook; }
+    
 private:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
 	void UpdateCameraVectors();
+    
+    bool freeLook = false;
 
 	const float cameraSpeedFactor = 1.f;
 	const float mouseSensitivity = 0.1f;
@@ -35,7 +68,7 @@ private:
 	const float zFAR = 500.f;
 	const float YAW = -90.0f;
 	const float PITCH = 0.0f;
-	const float FOV = 45.0f;
+	const float FOV = 90.0f;
 
 	float zNear;
 	float zFar;
@@ -43,6 +76,9 @@ private:
 	int width;
 	int height;
 	bool isPerspective;
+    
+    float yawCopy;
+    float pitchCopy;
 
 	glm::vec3 position;
 	glm::vec3 forward;
