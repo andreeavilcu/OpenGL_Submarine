@@ -252,10 +252,6 @@ void SubmarineProgram::RenderScene() {
     lightingWithTextureShader->setMat4("model", test);
     submarineModel->Draw(*lightingWithTextureShader);
 
-    glm::mat4 test = glm::mat4(1.f);
-    lightingWithTextureShader->setMat4("model", test);
-    submarineModel->Draw(*lightingWithTextureShader);
-
     lampShader->use();
     lampShader->setMat4("projection", camera->GetProjectionMatrix());
     lampShader->setMat4("view", camera->GetViewMatrix());
