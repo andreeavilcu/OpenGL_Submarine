@@ -494,3 +494,4 @@ docs/
 
 /ViewOBJMOdel-main/_external
 /ViewOBJModel-main/Models/terrain/terrain.obj
+*.obj
