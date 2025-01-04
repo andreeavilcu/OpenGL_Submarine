@@ -401,7 +401,6 @@ FodyWeavers.xsd
 # fox XCode ------------------------------------------
 # Compiled Object files
 *.o
-*.obj
 
 # Compiled Static libraries
 *.lib
