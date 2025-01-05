@@ -6,7 +6,7 @@ deltaTime(0.0),
 lastFrame(0.0),
 lightPos(0.0f, 2.0f, 1.0f)
 {
-    camera = new Camera(1920, 1080, glm::vec3(0.0, 0.0, 3.0));
+    camera = new Camera(1920, 1080, glm::vec3(0.f, -50.f, -100.f));
 }
 
 SubmarineProgram::~SubmarineProgram() {
@@ -17,6 +17,7 @@ void SubmarineProgram::Initialize() {
     SetupBuffers();
     SetupShaders();
     LoadModels();
+    InitializeFish(20);
     
     glfwSetWindowUserPointer(window, this);
     glfwSetCursorPosCallback(window, [](GLFWwindow* w, double x, double y) {
@@ -182,6 +183,8 @@ void SubmarineProgram::LoadModels() {
     
     submarineModel = new Model(currentPath + "/Models/Submarine/Submarine.obj", false);
     terrainModel = new Model(currentPath + "/Models/terrain/terrain.obj", false);
+    jellyFishModel = new Model(currentPath + "/Models/JellyFish/jellyfish.obj", false);
+    clownFishModel = new Model(currentPath + "/Models/ClownFish/clownfish.obj", false);
 }
 
 void SubmarineProgram::MouseCallback(double xpos, double ypos)
@@ -196,9 +199,10 @@ void SubmarineProgram::Run() {
         double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        
-        lightPos = glm::vec3(0.f, -50.f, -100.f);
-        
+
+        lightPos = glm::vec3(0.f, 200.f, -100.f);
+
+        UpdateFish(deltaTime);
         ProcessInput();
         RenderScene();
         
@@ -303,6 +307,47 @@ void SubmarineProgram::RenderScene() {
     RenderSkyboxAndLight();
 }
 
+void SubmarineProgram::InitializeFish(int numFish) {
+    glm::vec3 centerPoint = glm::vec3(0.f, -50.f, -100.f); // Same as light position
+
+    for (int i = 0; i < numFish; ++i) {
+        // Spawn fish in a smaller radius around the center point
+        fishPositions.push_back(glm::vec3(
+            centerPoint.x + (rand() % 20 - 10),  // ±10 units from center X
+            centerPoint.y + (rand() % 20 - 10),  // ±10 units from center Y
+            centerPoint.z + (rand() % 20 - 10)   // ±10 units from center Z
+        ));
+
+        // Adjust velocities for slower, more controlled movement
+        fishVelocities.push_back(glm::vec3(
+            (rand() % 100 - 50) / 200.0f,  // Slower velocity
+            (rand() % 100 - 50) / 200.0f,
+            (rand() % 100 - 50) / 200.0f
+        ));
+    }
+}
+
+void SubmarineProgram::UpdateFish(float deltaTime) {
+    glm::vec3 centerPoint = glm::vec3(0.f, -50.f, -100.f);
+    float maxDistance = 15.0f; // Maximum distance from center
+
+    for (size_t i = 0; i < fishPositions.size(); ++i) {
+        // Update position
+        fishPositions[i] += fishVelocities[i] * deltaTime;
+
+        // Check distance from center and bounce back if too far
+        glm::vec3 toCenter = centerPoint - fishPositions[i];
+        float distance = glm::length(toCenter);
+        
+        if (distance > maxDistance) {
+            // Normalize and scale the velocity back toward center
+            glm::vec3 directionToCenter = glm::normalize(toCenter);
+            fishVelocities[i] = directionToCenter * glm::length(fishVelocities[i]);
+        }
+    }
+}
+
+
 void SubmarineProgram::RenderObjects(Shader* shader) {
     glm::mat4 submarineModelMatrix = glm::mat4(1.f);
     
@@ -321,6 +366,8 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(-6.0f), glm::vec3(1.0f, 0.0f, .5f));
     
+
+
     shader->setMat4("model", submarineModelMatrix);
     submarineModel->Draw(*shader);
 
@@ -329,6 +376,30 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     terrainMatrix = glm::scale(terrainMatrix, glm::vec3(1.0f, 1.0f, 1.0f)); // Adjust scale
     shader->setMat4("model", terrainMatrix);
     terrainModel->Draw(*shader);
+
+
+    for (size_t i = 0; i < fishPositions.size(); i++) {
+        glm::mat4 fishModel = glm::mat4(1.0f);
+        fishModel = glm::translate(fishModel, fishPositions[i]);
+
+        if (glm::length(fishVelocities[i]) > 0) {
+            glm::vec3 direction = glm::normalize(fishVelocities[i]);
+            float rotationAngle = atan2(direction.x, direction.z);
+            fishModel = glm::rotate(fishModel, rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+        }
+
+        fishModel = glm::scale(fishModel, glm::vec3(0.3f));
+        shader->setMat4("model", fishModel);
+
+        // Alternate between jellyfish and clownfish
+        if (i % 2 == 0) {
+            jellyFishModel->Draw(*shader);
+        }
+        else {
+            clownFishModel->Draw(*shader);
+        }
+    }
+ 
 
 }
 
@@ -359,6 +430,8 @@ void SubmarineProgram::Cleanup() {
     delete lightingWithTextureShader;
     delete lampShader;
     delete submarineModel;
+    delete jellyFishModel;
+    delete clownFishModel;
     
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightVAO);

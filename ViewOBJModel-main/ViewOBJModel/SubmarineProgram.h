@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <GL/glew.h>
 #ifdef __APPLE__
 #include <GLFW/glfw3.h>
@@ -42,7 +42,10 @@ private:
 
 	unsigned int VBO, cubeVAO, lightVAO, skyboxVAO, depthMapFBO, depthMap;
 	Shader* lightingWithTextureShader, * lampShader, * skyboxShader, * shadowShader;
-	Model* submarineModel, * terrainModel;
+	Model* submarineModel, * terrainModel, * jellyFishModel, * clownFishModel;
+
+	std::vector<glm::vec3> fishPositions; // Pozițiile peștilor
+	std::vector<glm::vec3> fishVelocities; // Direcția și viteza fiecărui pește
     
 
 	glm::vec3 lightPos;
@@ -56,6 +59,8 @@ private:
 	void ProcessInput();
 	void RenderScene();
     void RenderSkyboxAndLight();
+	void InitializeFish(int numFish);
+	void UpdateFish(float deltaTime);
     void RenderObjects(Shader* shader);
 	void SetupBuffers();
 	void SetupShaders();
