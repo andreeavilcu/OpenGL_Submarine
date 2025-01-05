@@ -55,6 +55,7 @@ private:
 
 	void ProcessInput();
 	void RenderScene();
+    void RenderSkyboxAndLight();
     void RenderObjects(Shader* shader);
 	void SetupBuffers();
 	void SetupShaders();

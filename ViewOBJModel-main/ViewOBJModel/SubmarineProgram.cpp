@@ -251,10 +251,13 @@ void SubmarineProgram::ProcessInput() {
 
 void SubmarineProgram::RenderScene() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glViewport(0, 0, 1920, 1080);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    RenderSkyboxAndLight();
+    
     glm::mat4 lightProjection, lightView, lightSpaceMatrix;
-    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 100.0f);
     lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     lightSpaceMatrix = lightProjection * lightView;
     
@@ -288,24 +291,7 @@ void SubmarineProgram::RenderScene() {
     
     RenderObjects(lightingWithTextureShader);
     
-    glDepthFunc(GL_LEQUAL);
-    skyboxShader->use();
-    skyboxShader->setMat4("view", glm::mat4(glm::mat3(camera->GetViewMatrix())));
-    skyboxShader->setMat4("projection", camera->GetProjectionMatrix());
-    glBindVertexArray(skyboxVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
-    
-    glDepthFunc(GL_LESS);
-    lampShader->use();
-    lampShader->setMat4("projection", camera->GetProjectionMatrix());
-    lampShader->setMat4("view", camera->GetViewMatrix());
-    glm::mat4 lightModel = glm::translate(glm::mat4(1.0), lightPos);
-    lightModel = glm::scale(lightModel, glm::vec3(0.05f));
-    lampShader->setMat4("model", lightModel);
-    
-    glBindVertexArray(lightVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    RenderSkyboxAndLight();
 }
 
 void SubmarineProgram::RenderObjects(Shader* shader) {
@@ -334,6 +320,28 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     shader->setMat4("model", terrainMatrix);
     terrainModel->Draw(*shader);
 }
+
+void SubmarineProgram::RenderSkyboxAndLight() {
+    glDepthFunc(GL_LEQUAL);
+    skyboxShader->use();
+    skyboxShader->setMat4("view", glm::mat4(glm::mat3(camera->GetViewMatrix())));
+    skyboxShader->setMat4("projection", camera->GetProjectionMatrix());
+    glBindVertexArray(skyboxVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+    
+    glDepthFunc(GL_LESS);
+    lampShader->use();
+    lampShader->setMat4("projection", camera->GetProjectionMatrix());
+    lampShader->setMat4("view", camera->GetViewMatrix());
+    glm::mat4 lightModel = glm::translate(glm::mat4(1.0), lightPos);
+    lightModel = glm::scale(lightModel, glm::vec3(0.05f));
+    lampShader->setMat4("model", lightModel);
+    
+    glBindVertexArray(lightVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
 
 void SubmarineProgram::Cleanup() {
     delete camera;
