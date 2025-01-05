@@ -197,8 +197,7 @@ void SubmarineProgram::Run() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         
-        lightPos.x = 2.5f * cos(glfwGetTime());
-        lightPos.z = 2.5f * sin(glfwGetTime());
+        lightPos = glm::vec3(0.f, -50.f, -100.f);
         
         ProcessInput();
         RenderScene();
@@ -259,7 +258,16 @@ void SubmarineProgram::RenderScene() {
     RenderSkyboxAndLight();
     
     glm::mat4 lightProjection, lightView, lightSpaceMatrix;
-    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 100.0f);
+    float shadowNear = 0.1f;   
+    float shadowFar = 50.0f;    
+    float shadowSize = 25.0f;   
+
+    lightProjection = glm::ortho(
+        -shadowSize, shadowSize,
+        -shadowSize, shadowSize,
+        shadowNear, shadowFar
+    );
+
     lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     lightSpaceMatrix = lightProjection * lightView;
     
@@ -316,8 +324,9 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     shader->setMat4("model", submarineModelMatrix);
     submarineModel->Draw(*shader);
 
-    glm::mat4 terrainMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 5.0f, 15.f));
-    terrainMatrix = glm::scale(terrainMatrix, glm::vec3(.1f, .1f, .1f));
+    glm::mat4 terrainMatrix = glm::mat4(1.0f);
+    terrainMatrix = glm::translate(terrainMatrix, glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust position
+    terrainMatrix = glm::scale(terrainMatrix, glm::vec3(1.0f, 1.0f, 1.0f)); // Adjust scale
     shader->setMat4("model", terrainMatrix);
     terrainModel->Draw(*shader);
 

@@ -40,7 +40,7 @@ void main() {
     vec3 diffuseColor = texture(texture_diffuse1, TexCoords).rgb;
 
     // Ambient lighting
-    vec3 ambient = 0.5 * lightColor * diffuseColor;
+    vec3 ambient = 0.3 * lightColor * diffuseColor;
 
     // Diffuse lighting
     vec3 lightDir = normalize(lightPos - FragPos);
@@ -54,12 +54,12 @@ void main() {
     vec3 specular = spec * lightColor * vec3(0.5);
 
     // Shadow calculation
-    float shadow = ShadowCalculation(FragPosLightSpace);
+    float shadow = ShadowCalculation(FragPosLightSpace) * 0.5;
 
     // Reflection
     vec3 reflection = texture(cubeMap, ReflectDir).rgb;
 
     // Combine results
-    vec3 result = ambient + (1.0 - shadow) * (diffuse + specular) + 0 * reflection;
+    vec3 result = ambient + (1.0 - shadow * 0.7) * (diffuse + specular);
     FragColor = vec4(result, 1.0);
 }
