@@ -191,6 +191,8 @@ void SubmarineProgram::MouseCallback(double xpos, double ypos)
 
 void SubmarineProgram::Run() {
     while (!glfwWindowShouldClose(window)) {
+     
+
         double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -275,7 +277,6 @@ void SubmarineProgram::RenderScene() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     lightingWithTextureShader->use();
-    lightingWithTextureShader->setFloat("ambient", 0.6);
     lightingWithTextureShader->SetVec3("objectColor", 1.0f, 1.0f, 1.0f);
     lightingWithTextureShader->SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
     lightingWithTextureShader->SetVec3("lightPos", lightPos);
@@ -315,10 +316,10 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     shader->setMat4("model", submarineModelMatrix);
     submarineModel->Draw(*shader);
 
-    /*glm::mat4 terrainMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 5.0f, 15.f));
+    glm::mat4 terrainMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 5.0f, 15.f));
     terrainMatrix = glm::scale(terrainMatrix, glm::vec3(.1f, .1f, .1f));
     shader->setMat4("model", terrainMatrix);
-    terrainModel->Draw(*shader);*/
+    terrainModel->Draw(*shader);
 
 }
 
