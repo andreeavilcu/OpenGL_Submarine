@@ -314,11 +314,12 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     
     shader->setMat4("model", submarineModelMatrix);
     submarineModel->Draw(*shader);
-    
-    glm::mat4 terrainMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 5.0f, 15.f));
+
+    /*glm::mat4 terrainMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 5.0f, 15.f));
     terrainMatrix = glm::scale(terrainMatrix, glm::vec3(.1f, .1f, .1f));
     shader->setMat4("model", terrainMatrix);
-    terrainModel->Draw(*shader);
+    terrainModel->Draw(*shader);*/
+
 }
 
 void SubmarineProgram::RenderSkyboxAndLight() {
