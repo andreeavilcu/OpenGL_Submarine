@@ -37,10 +37,13 @@ public:
 private:
 	GLFWwindow* window;
 	Camera* camera;
+    
+    const unsigned int SHADOW_SIZE = 1024;
 
-	unsigned int VBO, cubeVAO, lightVAO, skyboxVAO;
-	Shader* lightingWithTextureShader, * lampShader, * skyboxShader;
+	unsigned int VBO, cubeVAO, lightVAO, skyboxVAO, depthMapFBO, depthMap;
+	Shader* lightingWithTextureShader, * lampShader, * skyboxShader, * shadowShader;
 	Model* submarineModel, * terrainModel;
+    
 
 	glm::vec3 lightPos;
 	glm::vec3 cubePos;
@@ -52,6 +55,7 @@ private:
 
 	void ProcessInput();
 	void RenderScene();
+    void RenderObjects(Shader* shader);
 	void SetupBuffers();
 	void SetupShaders();
 	void LoadModels();
