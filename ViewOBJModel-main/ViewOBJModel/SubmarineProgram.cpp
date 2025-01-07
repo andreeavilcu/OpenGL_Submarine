@@ -183,7 +183,7 @@ void SubmarineProgram::LoadModels() {
 #endif
     
     submarineModel = new Model(currentPath + "/Models/Submarine/Submarine.obj", false);
-    terrainModel = new Model(currentPath + "/Models/terrain/terrain.obj", false);
+    terrainModel = new Model(currentPath + "/Models/pond/pond.obj", false);
 }
 
 void SubmarineProgram::MouseCallback(double xpos, double ypos)
@@ -317,8 +317,9 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     shader->setMat4("model", submarineModelMatrix);
     submarineModel->Draw(*shader);
     
-    glm::mat4 terrainMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 5.0f, 15.f));
-    terrainMatrix = glm::scale(terrainMatrix, glm::vec3(.1f, .1f, .1f));
+    glm::mat4 terrainMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 0.0f, 0.f));
+    terrainMatrix = glm::rotate(terrainMatrix, glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
+    terrainMatrix = glm::scale(terrainMatrix, glm::vec3(500.f));
     shader->setMat4("model", terrainMatrix);
     terrainModel->Draw(*shader);
 }
