@@ -415,6 +415,21 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
 
 }
 
+        fishModel = glm::scale(fishModel, glm::vec3(0.3f));
+        shader->setMat4("model", fishModel);
+
+        // Alternate between jellyfish and clownfish
+        if (i % 2 == 0) {
+            jellyFishModel->Draw(*shader);
+        }
+        else {
+            clownFishModel->Draw(*shader);
+        }
+    }
+
+
+}
+
 void SubmarineProgram::RenderSkyboxAndLight() {
     glDepthFunc(GL_LEQUAL);
     glm::vec3 color = day ? glm::vec3(0.69f, 0.87f, 1.0f) : glm::vec3(0.1f, 0.2f, 0.3f);
