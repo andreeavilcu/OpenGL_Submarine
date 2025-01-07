@@ -550,9 +550,12 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
             break;
     }
     
-
+    
+    
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(-6.0f), glm::vec3(1.0f, 0.0f, .5f));
+
+
 
     shader->setMat4("model", submarineModelMatrix);
     submarineModel->Draw(*shader);
