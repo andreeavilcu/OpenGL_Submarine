@@ -104,7 +104,7 @@ private:
     
     bool freeLook = false;
 
-	const float cameraSpeedFactor = 1.f;
+	const float cameraSpeedFactor = 5.f;
 	const float mouseSensitivity = 0.1f;
 	const float zNEAR = 0.1f;
 	const float zFAR = 500.f;

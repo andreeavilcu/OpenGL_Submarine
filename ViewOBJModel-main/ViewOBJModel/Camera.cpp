@@ -151,6 +151,7 @@ void Camera::MouseControl(float xPos, float yPos) {
     if (fabs(xChange) <= 1e-6 && fabs(yChange) <= 1e-6) {
         return;
     }
+    
     xChange *= mouseSensitivity;
     yChange *= mouseSensitivity;
 
