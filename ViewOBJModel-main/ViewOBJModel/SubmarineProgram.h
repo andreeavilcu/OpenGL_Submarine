@@ -44,10 +44,12 @@ private:
 
 	unsigned int VBO, cubeVAO, lightVAO, skyboxVAO, depthMapFBO, depthMap;
 	Shader* lightingWithTextureShader, * lampShader, * skyboxShader, * shadowShader;
-	Model* submarineModel, * terrainModel, * jellyFishModel, * clownFishModel, * sunModel;
+	Model* submarineModel, * terrainModel, * jellyFishModel, * clownFishModel, * sunModel, * angelFishModel, * koiFishModel;
 
 	std::vector<glm::vec3> fishPositions; // Pozițiile peștilor
 	std::vector<glm::vec3> fishVelocities; // Direcția și viteza fiecărui pește
+	std::vector<float> fishSwimAnimationTime; // Time tracker for each fish's swimming animation
+	std::vector<float> fishVerticalAnimationTime; // Time tracker for vertical oscillation
 
 	glm::vec3 lightPos;
 	glm::vec3 cubePos;
@@ -62,6 +64,20 @@ private:
 	void RenderSkyboxAndLight();
 	void InitializeFish(int numFish);
 	void UpdateFish(float deltaTime);
+
+	void DrawJellyFish(const glm::mat4& baseModel, Shader* shader, Model* jellyFishModel);
+	void DrawClownFish(const glm::mat4& baseModel, Shader* shader, Model* clownFishModel, float animationTime);
+	void DrawAngelFish(const glm::mat4& baseModel, Shader* shader, Model* angelFishModel, float animationTime);
+	void DrawKoiFish(const glm::mat4& baseModel, Shader* shader, Model* koiFishModel, float animationTime);
+	void DrawFish(const std::vector<glm::vec3>& fishPositions,
+		const std::vector<glm::vec3>& fishVelocities,
+		const std::vector<float>& fishSwimAnimationTime,
+		Shader* shader,
+		Model* jellyFishModel,
+		Model* clownFishModel,
+		Model* angelFishModel,
+		Model* koiFishModel);
+
 	void RenderObjects(Shader* shader);
 	void SetupBuffers();
 	void SetupShaders();

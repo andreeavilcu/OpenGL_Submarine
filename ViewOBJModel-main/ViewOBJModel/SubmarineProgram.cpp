@@ -17,7 +17,7 @@ void SubmarineProgram::Initialize() {
     SetupBuffers();
     SetupShaders();
     LoadModels();
-    InitializeFish(20);
+    InitializeFish(60);
 
     glfwSetWindowUserPointer(window, this);
     glfwSetCursorPosCallback(window, [](GLFWwindow* w, double x, double y) {
@@ -187,7 +187,8 @@ void SubmarineProgram::LoadModels() {
     terrainModel = new Model(currentPath + "/Models/terrain/terrain.obj", false);
     jellyFishModel = new Model(currentPath + "/Models/JellyFish/jellyfish.obj", false);
     clownFishModel = new Model(currentPath + "/Models/ClownFish/clownfish.obj", false);
-    
+    koiFishModel = new Model(currentPath + "/Models/KoiFish/koifish.obj", false);
+    angelFishModel = new Model(currentPath + "/Models/AngelFish/angelfish.obj", false);
     sunModel = new Model(currentPath + "/Models/Moon/Moon.obj", false);
 }
 
@@ -306,10 +307,10 @@ void SubmarineProgram::RenderScene() {
 
     lightingWithTextureShader->use();
     lightingWithTextureShader->SetVec3("objectColor", 1.0f, 1.0f, 1.0f);
-    if(day)
+    if (day)
         lightingWithTextureShader->SetVec3("lightColor", 1.f, 1.f, 1.f);
     else
-        lightingWithTextureShader->SetVec3("lightColor", 0.1f, 0.1f, 0.1f);
+        lightingWithTextureShader->SetVec3("lightColor", 0.3f, 0.3f, 0.3f);
     lightingWithTextureShader->SetVec3("lightPos", lightPos);
     lightingWithTextureShader->SetVec3("viewPos", camera->GetPosition());
     lightingWithTextureShader->setInt("texture_diffuse1", 0);
@@ -327,41 +328,191 @@ void SubmarineProgram::RenderScene() {
 }
 
 void SubmarineProgram::InitializeFish(int numFish) {
-    glm::vec3 centerPoint = glm::vec3(0.f, -50.f, -100.f); // Same as light position
+    glm::vec3 centerPoint = glm::vec3(0.f, -70.f, -100.f);
+    const float minDistance = 15.0f;
+    const float spawnRadius = 100.0f;
+
+    // Define strict height limits
+    const float maxHeight = -40.f; // Upper height limit (higher in world space)
+    const float minHeight = -90.f; // Lower height limit
+    const float heightRange = minHeight - maxHeight;
 
     for (int i = 0; i < numFish; ++i) {
-        // Spawn fish in a smaller radius around the center point
-        fishPositions.push_back(glm::vec3(
-            centerPoint.x + (rand() % 20 - 10),  // ±10 units from center X
-            centerPoint.y + (rand() % 20 - 10),  // ±10 units from center Y
-            centerPoint.z + (rand() % 20 - 10)   // ±10 units from center Z
+        bool validPosition = false;
+        glm::vec3 newPosition;
+
+        while (!validPosition) {
+            // Generate random height within strict bounds
+            float randomHeight = minHeight + static_cast<float>(rand()) / RAND_MAX * (maxHeight - minHeight);
+
+            newPosition = glm::vec3(
+                centerPoint.x + (rand() % (int)(2 * spawnRadius) - spawnRadius),
+                randomHeight, // Use the calculated height
+                centerPoint.z + (rand() % (int)(2 * spawnRadius) - spawnRadius)
+            );
+
+            // Check distance from all existing fish
+            validPosition = true;
+            for (const auto& existingPos : fishPositions) {
+                if (glm::length(newPosition - existingPos) < minDistance) {
+                    validPosition = false;
+                    break;
+                }
+            }
+        }
+
+        fishPositions.push_back(newPosition);
+
+        // Reduce vertical velocity component to minimize height changes
+        fishVelocities.push_back(glm::vec3(
+            (rand() % 100 - 50) / 300.0f,
+            (rand() % 100 - 50) / 500.0f, // Reduced vertical velocity
+            (rand() % 100 - 50) / 300.0f
         ));
 
-        // Adjust velocities for slower, more controlled movement
-        fishVelocities.push_back(glm::vec3(
-            (rand() % 100 - 50) / 200.0f,  // Slower velocity
-            (rand() % 100 - 50) / 200.0f,
-            (rand() % 100 - 50) / 200.0f
-        ));
+        fishSwimAnimationTime.push_back(static_cast<float>(rand()) / RAND_MAX * 2.0f * 3.14159f);
+        fishVerticalAnimationTime.push_back(static_cast<float>(rand()) / RAND_MAX * 2.0f * 3.14159f);
     }
 }
 
+
 void SubmarineProgram::UpdateFish(float deltaTime) {
-    glm::vec3 centerPoint = glm::vec3(0.f, -50.f, -100.f);
-    float maxDistance = 15.0f; // Maximum distance from center
+    glm::vec3 centerPoint = glm::vec3(0.f, -70.f, -100.f);
+    float maxDistance = 150.0f;
+
+    // Use the same height limits as in initialization
+    const float maxHeight = -50.f;
+    const float minHeight = -80.f;
+
+    const float swimFrequency = 3.0f;
+    const float verticalFrequency = 1.2f;
 
     for (size_t i = 0; i < fishPositions.size(); ++i) {
-        // Update position
+        fishSwimAnimationTime[i] += deltaTime * swimFrequency;
+        fishVerticalAnimationTime[i] += deltaTime * verticalFrequency;
+
+        // Store previous position
+        glm::vec3 previousPosition = fishPositions[i];
+
+        if (i % 2 != 0) { // For clownfish
+            float verticalOffset = sin(fishVerticalAnimationTime[i]) * 0.1f;
+            fishPositions[i].y += verticalOffset;
+        }
+
         fishPositions[i] += fishVelocities[i] * deltaTime;
 
-        // Check distance from center and bounce back if too far
-        glm::vec3 toCenter = centerPoint - fishPositions[i];
-        float distance = glm::length(toCenter);
+        // Strict height enforcement
+        if (fishPositions[i].y > maxHeight) {
+            fishPositions[i].y = maxHeight;
+            fishVelocities[i].y *= -1.0f; // Reverse vertical velocity
+        }
+        else if (fishPositions[i].y < minHeight) {
+            fishPositions[i].y = minHeight;
+            fishVelocities[i].y *= -1.0f; // Reverse vertical velocity
+        }
 
-        if (distance > maxDistance) {
-            // Normalize and scale the velocity back toward center
-            glm::vec3 directionToCenter = glm::normalize(toCenter);
-            fishVelocities[i] = directionToCenter * glm::length(fishVelocities[i]);
+        // Horizontal boundary check
+        glm::vec2 horizontalOffset = glm::vec2(fishPositions[i].x - centerPoint.x,
+            fishPositions[i].z - centerPoint.z);
+        float horizontalDistance = glm::length(horizontalOffset);
+
+        if (horizontalDistance > maxDistance) {
+            // Only adjust horizontal components
+            glm::vec2 directionToCenter = glm::normalize(-horizontalOffset);
+            fishVelocities[i].x = directionToCenter.x * glm::length(fishVelocities[i]);
+            fishVelocities[i].z = directionToCenter.y * glm::length(fishVelocities[i]);
+        }
+
+        // Gradually reduce extreme vertical velocities
+        if (abs(fishVelocities[i].y) > 0.1f) {
+            fishVelocities[i].y *= 0.98f;
+        }
+    }
+}
+
+void SubmarineProgram::DrawJellyFish(const glm::mat4& baseModel, Shader* shader, Model* jellyFishModel)
+{
+    glm::mat4 model = glm::scale(baseModel, glm::vec3(3.f));
+    shader->setMat4("model", model);
+    jellyFishModel->Draw(*shader);
+}
+
+void SubmarineProgram::DrawClownFish(const glm::mat4& baseModel, Shader* shader, Model* clownFishModel, float animationTime)
+{
+    glm::mat4 model = baseModel;
+
+    // Tail swishing motion
+    float tailSwing = sin(animationTime) * 0.2f;
+    model = glm::rotate(model, tailSwing, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Slight rolling motion
+    float rollAngle = sin(animationTime * 0.5f) * 0.1f;
+    model = glm::rotate(model, rollAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    model = glm::scale(model, glm::vec3(70.f));
+    shader->setMat4("model", model);
+    clownFishModel->Draw(*shader);
+}
+
+void SubmarineProgram::DrawAngelFish(const glm::mat4& baseModel, Shader* shader, Model* angelFishModel, float animationTime)
+{
+    glm::mat4 model = baseModel;
+
+    // Tail swishing motion
+    float tailSwing = sin(animationTime) * 0.2f;
+    model = glm::rotate(model, tailSwing, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Slight rolling motion
+    float rollAngle = sin(animationTime * 0.5f) * 0.1f;
+    model = glm::rotate(model, rollAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    model = glm::scale(model, glm::vec3(70.f));
+    shader->setMat4("model", model);
+    angelFishModel->Draw(*shader);
+}
+
+void SubmarineProgram::DrawKoiFish(const glm::mat4& baseModel, Shader* shader, Model* koiFishModel, float animationTime)
+{
+    glm::mat4 model = baseModel;
+
+    // Tail swishing motion
+    float tailSwing = sin(animationTime) * 0.2f;
+    model = glm::rotate(model, tailSwing, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Slight rolling motion
+    float rollAngle = sin(animationTime * 0.5f) * 0.1f;
+    model = glm::rotate(model, rollAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    model = glm::scale(model, glm::vec3(15.f));
+    shader->setMat4("model", model);
+    koiFishModel->Draw(*shader);
+}
+
+void SubmarineProgram::DrawFish(const std::vector<glm::vec3>& fishPositions, const std::vector<glm::vec3>& fishVelocities, const std::vector<float>& fishSwimAnimationTime, Shader* shader, Model* jellyFishModel, Model* clownFishModel, Model* angelFishModel, Model* koiFishModel)
+{
+    for (size_t i = 0; i < fishPositions.size(); i++) {
+        glm::mat4 baseModel = glm::mat4(1.0f);
+        baseModel = glm::translate(baseModel, fishPositions[i]);
+
+        // Orient fish based on velocity
+        if (glm::length(fishVelocities[i]) > 0) {
+            glm::vec3 direction = glm::normalize(fishVelocities[i]);
+            float rotationAngle = atan2(direction.x, direction.z);
+            baseModel = glm::rotate(baseModel, rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+        }
+
+        // Determine fish type and draw
+        if (i % 2 == 0 && i % 3 != 0 && i % 4 != 0) {
+            DrawJellyFish(baseModel, shader, jellyFishModel);
+        }
+        else if (i % 3 == 0 && i % 4 != 0) {
+            DrawClownFish(baseModel, shader, clownFishModel, fishSwimAnimationTime[i]);
+        }
+        else if (i % 4 == 0) {
+            DrawAngelFish(baseModel, shader, angelFishModel, fishSwimAnimationTime[i]);
+        }
+        else {
+            DrawKoiFish(baseModel, shader, koiFishModel, fishSwimAnimationTime[i]);
         }
     }
 }
@@ -409,30 +560,7 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     shader->setMat4("model", terrainMatrix);
     terrainModel->Draw(*shader);
 
-
-    for (size_t i = 0; i < fishPositions.size(); i++) {
-        glm::mat4 fishModel = glm::mat4(1.0f);
-        fishModel = glm::translate(fishModel, fishPositions[i]);
-
-        if (glm::length(fishVelocities[i]) > 0) {
-            glm::vec3 direction = glm::normalize(fishVelocities[i]);
-            float rotationAngle = atan2(direction.x, direction.z);
-            fishModel = glm::rotate(fishModel, rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
-        }
-
-        fishModel = glm::scale(fishModel, glm::vec3(0.3f));
-        shader->setMat4("model", fishModel);
-
-        // Alternate between jellyfish and clownfish
-        if (i % 2 == 0) {
-            jellyFishModel->Draw(*shader);
-        }
-        else {
-            clownFishModel->Draw(*shader);
-        }
-    }
-
-
+    DrawFish(fishPositions, fishVelocities, fishSwimAnimationTime, shader, jellyFishModel, clownFishModel, angelFishModel, koiFishModel);
 }
 
 void SubmarineProgram::RenderSkyboxAndLight() {
@@ -451,7 +579,7 @@ void SubmarineProgram::RenderSkyboxAndLight() {
     lampShader->setMat4("projection", camera->GetProjectionMatrix());
     lampShader->setMat4("view", camera->GetViewMatrix());
     glm::mat4 lightModel = glm::translate(glm::mat4(1.0), lightPos);
-    lightModel = glm::scale(lightModel, glm::vec3(0.05f));
+    lightModel = glm::scale(lightModel, glm::vec3(5.f));
     lampShader->setMat4("model", lightModel);
     
     sunModel->Draw(*lampShader);
@@ -464,6 +592,9 @@ void SubmarineProgram::Cleanup() {
     delete submarineModel;
     delete jellyFishModel;
     delete clownFishModel;
+    delete angelFishModel;
+    delete koiFishModel;
+    delete sunModel;
 
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightVAO);
