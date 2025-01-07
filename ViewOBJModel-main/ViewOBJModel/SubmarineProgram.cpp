@@ -249,8 +249,10 @@ void SubmarineProgram::ProcessInput() {
     bool xIsPressedNow = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
 
     if (!xIsPressedNow && wasXPressed) {
-        if (camera->getFreeLook() && camera->thirdPerson()) camera->Set(1920, 1080, subSavedLocation);
-        camera->changeFreeLook();
+        if (camera->getFreeLook()) 
+            camera->Set(1920, 1080, subSavedLocation);
+        if(camera->thirdPerson())
+            camera->changeFreeLook();
     }
     wasXPressed = xIsPressedNow;
     
@@ -537,19 +539,17 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
             submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, -.5f, -1.0f));
             break;
         case 2:
-            submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, -0.f, -1.0f));
+            submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, 0.f, -3.0f));
+            submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
             break;
         case 3:
-            submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, .1, .5f));
+            submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, 0.05f, 0.3f));
             break;
     }
     
-    
-    
+
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(-6.0f), glm::vec3(1.0f, 0.0f, .5f));
-
-
 
     shader->setMat4("model", submarineModelMatrix);
     submarineModel->Draw(*shader);

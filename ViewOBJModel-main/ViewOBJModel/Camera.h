@@ -57,14 +57,43 @@ public:
     bool getFreeLook() { return freeLook; }
         
     void setCameraMode(unsigned int mode) {
+        if (cameraMode == mode)
+            return;
+
+        switch (cameraMode) {
+        case 1:
+            position += glm::vec3(0.f, -0.5f, -1.f);
+            break;
+        case 2:
+            position += glm::vec3(0.f, -3.f, 0.f);
+            break;
+        case 3:
+            position += glm::vec3(0.f, 0.05f, 0.3f);
+            break;
+        }
+
         cameraMode = mode;
-        
-        if (mode == 3) pitch = 0;
-        else if (mode == 2) pitch = 90;
-        else if (mode == 3) pitch = 45;
-        
+
+        switch (cameraMode) {
+        case 1:
+            position -= glm::vec3(0.f, -0.5f, -1.f);
+            pitch = 0;
+            break;
+        case 2:
+            position -= glm::vec3(0.f, -3.f, 0.f);
+            pitch = -89;
+            break;
+        case 3:
+            position -= glm::vec3(0.f, 0.05f, 0.3f);
+            pitch = -45;
+            break;
+
+        }
+
         UpdateCameraVectors();
+
     }
+
     
     bool thirdPerson() { return cameraMode == 1; }
     unsigned int getCameraMode() { return cameraMode; }
@@ -75,7 +104,7 @@ private:
     
     bool freeLook = false;
 
-	const float cameraSpeedFactor = 10.f;
+	const float cameraSpeedFactor = 1.f;
 	const float mouseSensitivity = 0.1f;
 	const float zNEAR = 0.1f;
 	const float zFAR = 500.f;
