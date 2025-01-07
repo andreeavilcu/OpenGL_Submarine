@@ -1,0 +1,32 @@
+newmtl mat0
+Ns 250
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Ni 1.0
+d 1
+illum 2
+map_Kd image0.png
+map_Ks image1.png
+bump image2.png
+
+newmtl mat1
+Ns 250
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Ni 1.0
+d 1
+illum 2
+map_Kd image0.png
+map_Ks image1.png
+bump image2.png
+
+newmtl mat2
+Ns 250
+Ka 1.0 1.0 1.0
+Kd 1 1 1
+Ks 1 1 1
+Ke 1 1 1
+d 1
+illum 1
