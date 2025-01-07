@@ -9,12 +9,14 @@ out vec3 Normal;                           // Normal vector
 out vec2 TexCoords;                        // Texture coordinates
 out vec4 FragPosLightSpace;                // Position in light space
 out vec3 ReflectDir;                       // Reflection vector
+out float Opacity;
 
 uniform mat4 model;                        // Model matrix
 uniform mat4 view;                         // View matrix
 uniform mat4 projection;                   // Projection matrix
 uniform mat4 lightSpaceMatrix;             // Light-space matrix (light view * light projection)
 uniform vec3 viewPos;                      // Camera position
+uniform float opacity;
 
 void main() {
     FragPos = vec3(model * vec4(aPos, 1.0)); // World-space position
@@ -30,4 +32,6 @@ void main() {
 
     // Transform position to clip space
     gl_Position = projection * view * vec4(FragPos, 1.0);
+
+    Opacity = opacity;
 }

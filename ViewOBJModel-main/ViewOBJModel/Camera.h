@@ -68,7 +68,7 @@ public:
             position += glm::vec3(0.f, -3.f, 0.f);
             break;
         case 3:
-            position += glm::vec3(0.f, 0.05f, 0.3f);
+            position += glm::vec3(0.f, 0.05f, 0.35f);
             break;
         }
 
@@ -84,7 +84,7 @@ public:
             pitch = -89;
             break;
         case 3:
-            position -= glm::vec3(0.f, 0.05f, 0.3f);
+            position -= glm::vec3(0.f, 0.05f, 0.35f);
             pitch = -45;
             break;
 

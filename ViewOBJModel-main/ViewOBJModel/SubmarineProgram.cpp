@@ -190,6 +190,9 @@ void SubmarineProgram::LoadModels() {
     koiFishModel = new Model(currentPath + "/Models/KoiFish/koifish.obj", false);
     angelFishModel = new Model(currentPath + "/Models/AngelFish/angelfish.obj", false);
     sunModel = new Model(currentPath + "/Models/Moon/Moon.obj", false);
+    waterModel = new Model(currentPath + "/Models/Water/Water.obj", false);
+
+    waterTextureID = CreateTexture(currentPath + "/Models/Water/image0.png");
 }
 
 void SubmarineProgram::MouseCallback(double xpos, double ypos)
@@ -320,13 +323,12 @@ void SubmarineProgram::RenderScene() {
     lightingWithTextureShader->setMat4("view", camera->GetViewMatrix());
     lightingWithTextureShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
     lightingWithTextureShader->setInt("shadowMap", 1);
+    lightingWithTextureShader->setFloat("opacity", 1);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthMap);
 
     RenderObjects(lightingWithTextureShader);
-
-    RenderSkyboxAndLight();
 }
 
 void SubmarineProgram::InitializeFish(int numFish) {
@@ -397,7 +399,7 @@ void SubmarineProgram::UpdateFish(float deltaTime) {
         glm::vec3 previousPosition = fishPositions[i];
 
         if (i % 2 != 0) { // For clownfish
-            float verticalOffset = sin(fishVerticalAnimationTime[i]) * 0.1f;
+            float verticalOffset = sin(fishVerticalAnimationTime[i]) * 0.01f;
             fishPositions[i].y += verticalOffset;
         }
 
@@ -533,6 +535,7 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     glm::vec3 up = camera->GetUp();
     glm::mat4 rotationMatrix = glm::inverse(glm::lookAt(glm::vec3(0.0f), forward, up));
     submarineModelMatrix *= rotationMatrix;
+    submarineModelMatrix = glm::scale(submarineModelMatrix, glm::vec3(10.0f)); // Adjust scale
 
     switch (camera->getCameraMode()) {
         case 1:
@@ -543,7 +546,7 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
             submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
             break;
         case 3:
-            submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, 0.05f, 0.3f));
+            submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, 0.05f, 0.35f));
             break;
     }
     
@@ -561,10 +564,29 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     terrainModel->Draw(*shader);
 
     DrawFish(fishPositions, fishVelocities, fishSwimAnimationTime, shader, jellyFishModel, clownFishModel, angelFishModel, koiFishModel);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glm::mat4 waterMatrix = glm::mat4(1.0f);
+    waterMatrix = glm::translate(waterMatrix, glm::vec3(0.0f, -30.0f, -100.0f));
+    waterMatrix = glm::scale(waterMatrix, glm::vec3(100.0f));
+    shader->setMat4("model", waterMatrix);
+    if (shader == lightingWithTextureShader)
+        lightingWithTextureShader->setFloat("opacity", 0.5f);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, waterTextureID);
+    waterModel->Draw(*shader);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glDisable(GL_BLEND);
 }
 
 void SubmarineProgram::RenderSkyboxAndLight() {
-    glDepthFunc(GL_LEQUAL);
+    glDisable(GL_DEPTH_TEST);
+
+   // glDepthFunc(GL_LEQUAL);
     glm::vec3 color = day ? glm::vec3(0.69f, 0.87f, 1.0f) : glm::vec3(0.1f, 0.2f, 0.3f);
     skyboxShader->use();
     skyboxShader->SetVec3("color", color);
@@ -573,6 +595,7 @@ void SubmarineProgram::RenderSkyboxAndLight() {
     glBindVertexArray(skyboxVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
+    glEnable(GL_DEPTH_TEST);
 
     glDepthFunc(GL_LESS);
     lampShader->use();
@@ -583,6 +606,7 @@ void SubmarineProgram::RenderSkyboxAndLight() {
     lampShader->setMat4("model", lightModel);
     
     sunModel->Draw(*lampShader);
+
 }
 
 void SubmarineProgram::Cleanup() {
@@ -595,6 +619,7 @@ void SubmarineProgram::Cleanup() {
     delete angelFishModel;
     delete koiFishModel;
     delete sunModel;
+    delete waterModel;
 
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightVAO);

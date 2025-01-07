@@ -38,3 +38,4 @@ private:
     vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
 };
 
+unsigned int CreateTexture(const std::string& strTexturePath);

@@ -5,6 +5,7 @@ in vec3 Normal;                 // Normal vector
 in vec2 TexCoords;              // Texture coordinates
 in vec4 FragPosLightSpace;      // Position in light space
 in vec3 ReflectDir;             // Reflection vector
+in float Opacity;
 
 out vec4 FragColor;
 
@@ -61,5 +62,5 @@ void main() {
 
     // Combine results
     vec3 result = ambient + (1.0 - shadow * 0.7) * (diffuse + specular);
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, Opacity);
 }
