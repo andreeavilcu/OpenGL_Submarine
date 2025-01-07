@@ -62,13 +62,14 @@ public:
 
         switch (cameraMode) {
         case 1:
-            position += glm::vec3(0.f, -0.5f, -1.f);
+            position += glm::vec3(0.f, -5.0f, -10.f);
             break;
         case 2:
-            position += glm::vec3(0.f, -3.f, 0.f);
+            position += glm::vec3(0.f, -30.f, 0.f);
+            yaw += 180;
             break;
         case 3:
-            position += glm::vec3(0.f, 0.05f, 0.35f);
+            position += glm::vec3(0.f, 0.5f, 3.5f);
             break;
         }
 
@@ -76,17 +77,18 @@ public:
 
         switch (cameraMode) {
         case 1:
-            position -= glm::vec3(0.f, -0.5f, -1.f);
+            position -= glm::vec3(0.f, -5.f, -10.f);
             pitch = 0;
             break;
         case 2:
-            position -= glm::vec3(0.f, -3.f, 0.f);
+            position -= glm::vec3(0.f, -30.f, 0.f);
+            yaw += 180;
             pitch = -89;
             break;
         case 3:
-            position -= glm::vec3(0.f, 0.05f, 0.35f);
+            position -= glm::vec3(0.f, 0.5f, 3.5f);
             pitch = -45;
-            break;
+            break;  
 
         }
 

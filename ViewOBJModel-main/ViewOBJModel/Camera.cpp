@@ -93,7 +93,8 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
         case 7: {
             if (freeLook) break;
             
-            glm::vec3 pivot = position + forward * -1.0f;
+            float dist = cameraMode == 1 ? -10.f : cameraMode == 2 ? 0.f : 5.f;
+            glm::vec3 pivot = position + forward * dist;
 
             position -= pivot;
 
@@ -113,7 +114,8 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
         case 8: {
             if (freeLook) break;
             
-            glm::vec3 pivot = position + forward * -1.0f;
+            float dist = cameraMode == 1 ? -10.f : cameraMode == 2 ? 0.f : 5.f;
+            glm::vec3 pivot = position + forward * dist;
 
             position -= pivot;
             
@@ -172,7 +174,7 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPi
     
     if (constrainPitch) {
         pitch = pitch > 89.0f ? 89.0f : pitch;
-        pitch = pitch < 89.0f ? 89.0f : pitch;
+        pitch = pitch < -89.0f ? -89.0f : pitch;
     }
     
     UpdateCameraVectors();

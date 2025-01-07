@@ -235,35 +235,37 @@ void SubmarineProgram::ProcessInput() {
     
     bool xIsPressedNow = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
     
-    if (!xIsPressedNow && wasXPressed) {
+    if (xIsPressedNow && !wasXPressed) {
         if (camera->getFreeLook())
             camera->Set(1920, 1080, subSavedLocation);
         if(camera->thirdPerson())
             camera->changeFreeLook();
         
         wasXPressed = xIsPressedNow;
-        
-        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !camera->getFreeLook())
-            camera->setCameraMode(1);
-        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !camera->getFreeLook())
-            camera->setCameraMode(2);
-        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && !camera->getFreeLook())
+    }
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !camera->getFreeLook())
+        camera->setCameraMode(1);
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !camera->getFreeLook())
+        camera->setCameraMode(2);
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && !camera->getFreeLook())
+        camera->setCameraMode(3);
+
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+        if (camera->getFreeLook()) {
+            camera->Set(1920, 1080, subSavedLocation);
             camera->setCameraMode(3);
-        
-        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-            if (camera->getFreeLook()) {
-                camera->Set(1920, 1080, subSavedLocation);
-                camera->setCameraMode(3);
-                camera->changeFreeLook();
-            }
-            
-            camera->Reset(1920, 1080);
+            camera->changeFreeLook();
         }
+
+        camera->Reset(1920, 1080);
     }
 }
 
 void SubmarineProgram::RenderScene() {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    if(day)
+        glClearColor(0.69f, 0.87f, 1.0f, 1.0f);
+    else
+        glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glViewport(0, 0, 1920, 1080);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -315,6 +317,9 @@ void SubmarineProgram::RenderScene() {
     glBindTexture(GL_TEXTURE_2D, depthMap);
 
     RenderObjects(lightingWithTextureShader);
+
+    RenderSkyboxAndLight();
+
 }
 
 void SubmarineProgram::InitializeFish(int numFish) {
