@@ -65,12 +65,12 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
     
     switch (direction) {
         case 1: // FORWARD
-            if (cameraMode == 1) position += forward * velocity;
+            if (cameraMode == 1 || freeLook) position += forward * velocity;
             else if (cameraMode == 2) position += up * velocity;
             else if (cameraMode == 3) position += (up + forward) * velocity;
             break;
         case 2: // BACKWARD
-            if (cameraMode == 1) position -= forward * velocity;
+            if (cameraMode == 1 || freeLook) position -= forward * velocity;
             else if (cameraMode == 2) position -= up * velocity;
             else if (cameraMode == 3) position -= (up + forward) * velocity;
             break;
@@ -81,12 +81,12 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
             position += right * velocity;
             break;
         case 5: // UP
-            if (cameraMode == 1) position += worldUp * velocity;
+            if (cameraMode == 1 || freeLook) position += worldUp * velocity;
             else if (cameraMode == 2) position -= forward * velocity;
             else if (cameraMode == 3) position += (worldUp - forward) * velocity;
             break;
         case 6: // DOWN
-            if (cameraMode == 1) position -= worldUp * velocity;
+            if (cameraMode == 1 || freeLook) position -= worldUp * velocity;
             else if (cameraMode == 2) position += forward * velocity;
             else if (cameraMode == 3) position -= (worldUp - forward) * velocity;
             break;
@@ -171,7 +171,7 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPi
     
     if (constrainPitch) {
         pitch = pitch > 89.0f ? 89.0f : pitch;
-        pitch = pitch < -89.0f ? -89.0f : pitch;
+        pitch = pitch < 89.0f ? 89.0f : pitch;
     }
     
     UpdateCameraVectors();

@@ -49,7 +49,6 @@ private:
 	std::vector<glm::vec3> fishPositions; // Pozițiile peștilor
 	std::vector<glm::vec3> fishVelocities; // Direcția și viteza fiecărui pește
 
-
 	glm::vec3 lightPos;
 	glm::vec3 cubePos;
 

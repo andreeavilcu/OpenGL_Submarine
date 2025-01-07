@@ -248,17 +248,17 @@ void SubmarineProgram::ProcessInput() {
     bool xIsPressedNow = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
 
     if (!xIsPressedNow && wasXPressed) {
-        if (camera->getFreeLook()) camera->Set(1920, 1080, subSavedLocation);
+        if (camera->getFreeLook() && camera->thirdPerson()) camera->Set(1920, 1080, subSavedLocation);
         camera->changeFreeLook();
     }
     wasXPressed = xIsPressedNow;
     
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-        camera->cameraMode = 1;
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-        camera->cameraMode = 2;
-    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-        camera->cameraMode = 3;
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !camera->getFreeLook())
+        camera->setCameraMode(1);
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !camera->getFreeLook())
+        camera->setCameraMode(2);
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && !camera->getFreeLook())
+        camera->setCameraMode(3);
 
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         if (camera->getFreeLook()) {
@@ -381,7 +381,20 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
     glm::mat4 rotationMatrix = glm::inverse(glm::lookAt(glm::vec3(0.0f), forward, up));
     submarineModelMatrix *= rotationMatrix;
 
-    submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, -.5f, -1.0f));
+    switch (camera->getCameraMode()) {
+        case 1:
+            submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, -.5f, -1.0f));
+            break;
+        case 2:
+            submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, -0.f, -1.0f));
+            break;
+        case 3:
+            submarineModelMatrix = glm::translate(submarineModelMatrix, glm::vec3(0.0f, .1, .5f));
+            break;
+    }
+    
+    
+    
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     submarineModelMatrix = glm::rotate(submarineModelMatrix, glm::radians(-6.0f), glm::vec3(1.0f, 0.0f, .5f));
 

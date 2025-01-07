@@ -55,8 +55,19 @@ public:
     }
     
     bool getFreeLook() { return freeLook; }
+        
+    void setCameraMode(unsigned int mode) {
+        cameraMode = mode;
+        
+        if (mode == 3) pitch = 0;
+        else if (mode == 2) pitch = 90;
+        else if (mode == 3) pitch = 45;
+        
+        UpdateCameraVectors();
+    }
     
-    unsigned int cameraMode = 1;
+    bool thirdPerson() { return cameraMode == 1; }
+    unsigned int getCameraMode() { return cameraMode; }
     
 private:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
@@ -95,4 +106,6 @@ private:
 	bool bFirstMouseMove = true;
 	float lastX = 0.f, lastY = 0.f;
 	bool mouseLocked = false;
+    
+    unsigned int cameraMode = 1;
 };
