@@ -253,6 +253,7 @@ void SubmarineProgram::ProcessInput() {
         if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
             if (camera->getFreeLook()) {
                 camera->Set(1920, 1080, subSavedLocation);
+                camera->setCameraMode(3);
                 camera->changeFreeLook();
             }
             
