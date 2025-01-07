@@ -187,6 +187,8 @@ void SubmarineProgram::LoadModels() {
     terrainModel = new Model(currentPath + "/Models/terrain/terrain.obj", false);
     jellyFishModel = new Model(currentPath + "/Models/JellyFish/jellyfish.obj", false);
     clownFishModel = new Model(currentPath + "/Models/ClownFish/clownfish.obj", false);
+    
+    sunModel = new Model(currentPath + "/Models/Moon/Moon.obj", false);
 }
 
 void SubmarineProgram::MouseCallback(double xpos, double ypos)
@@ -418,10 +420,6 @@ void SubmarineProgram::RenderSkyboxAndLight() {
     glm::vec3 color = day ? glm::vec3(0.69f, 0.87f, 1.0f) : glm::vec3(0.1f, 0.2f, 0.3f);
     skyboxShader->use();
     skyboxShader->SetVec3("color", color);
-    //if(day)
-    //    skyboxShader->SetVec3("color", 0.69f, 0.87f, 1.0f);
-    //else
-    //    skyboxShader->SetVec3("color", 0.4f, 0.5f, 0.7f);
     skyboxShader->setMat4("view", glm::mat4(glm::mat3(camera->GetViewMatrix())));
     skyboxShader->setMat4("projection", camera->GetProjectionMatrix());
     glBindVertexArray(skyboxVAO);
@@ -435,6 +433,8 @@ void SubmarineProgram::RenderSkyboxAndLight() {
     glm::mat4 lightModel = glm::translate(glm::mat4(1.0), lightPos);
     lightModel = glm::scale(lightModel, glm::vec3(0.05f));
     lampShader->setMat4("model", lightModel);
+    
+    // asunModel->Draw(*lampShader);
 
     glBindVertexArray(lightVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);

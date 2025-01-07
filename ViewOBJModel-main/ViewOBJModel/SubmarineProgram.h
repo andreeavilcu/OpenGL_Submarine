@@ -44,7 +44,7 @@ private:
 
 	unsigned int VBO, cubeVAO, lightVAO, skyboxVAO, depthMapFBO, depthMap;
 	Shader* lightingWithTextureShader, * lampShader, * skyboxShader, * shadowShader;
-	Model* submarineModel, * terrainModel, * jellyFishModel, * clownFishModel;
+	Model* submarineModel, * terrainModel, * jellyFishModel, * clownFishModel, * sunModel;
 
 	std::vector<glm::vec3> fishPositions; // Pozițiile peștilor
 	std::vector<glm::vec3> fishVelocities; // Direcția și viteza fiecărui pește
