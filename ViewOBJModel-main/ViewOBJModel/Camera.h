@@ -56,6 +56,8 @@ public:
     
     bool getFreeLook() { return freeLook; }
     
+    unsigned int cameraMode = 1;
+    
 private:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
 	void UpdateCameraVectors();

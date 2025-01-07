@@ -252,6 +252,13 @@ void SubmarineProgram::ProcessInput() {
         camera->changeFreeLook();
     }
     wasXPressed = xIsPressedNow;
+    
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+        camera->cameraMode = 1;
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+        camera->cameraMode = 2;
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+        camera->cameraMode = 3;
 
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         if (camera->getFreeLook()) {
@@ -434,10 +441,7 @@ void SubmarineProgram::RenderSkyboxAndLight() {
     lightModel = glm::scale(lightModel, glm::vec3(0.05f));
     lampShader->setMat4("model", lightModel);
     
-    // asunModel->Draw(*lampShader);
-
-    glBindVertexArray(lightVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    sunModel->Draw(*lampShader);
 }
 
 void SubmarineProgram::Cleanup() {

@@ -65,10 +65,14 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
     
     switch (direction) {
         case 1: // FORWARD
-            position += forward * velocity;
+            if (cameraMode == 1) position += forward * velocity;
+            else if (cameraMode == 2) position += up * velocity;
+            else if (cameraMode == 3) position += (up + forward) * velocity;
             break;
         case 2: // BACKWARD
-            position -= forward * velocity;
+            if (cameraMode == 1) position -= forward * velocity;
+            else if (cameraMode == 2) position -= up * velocity;
+            else if (cameraMode == 3) position -= (up + forward) * velocity;
             break;
         case 3: // LEFT
             position -= right * velocity;
@@ -77,10 +81,14 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
             position += right * velocity;
             break;
         case 5: // UP
-            position += worldUp * velocity;
+            if (cameraMode == 1) position += worldUp * velocity;
+            else if (cameraMode == 2) position -= forward * velocity;
+            else if (cameraMode == 3) position += (worldUp - forward) * velocity;
             break;
         case 6: // DOWN
-            position -= worldUp * velocity;
+            if (cameraMode == 1) position -= worldUp * velocity;
+            else if (cameraMode == 2) position += forward * velocity;
+            else if (cameraMode == 3) position -= (worldUp - forward) * velocity;
             break;
         case 7: {
             if (freeLook) break;
