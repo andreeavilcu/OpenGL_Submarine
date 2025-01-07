@@ -123,7 +123,7 @@ void SubmarineProgram::SetupBuffers() {
 }
 
 void SubmarineProgram::SetupShaders() {
-#ifdef _APPLE_
+#ifdef __APPLE__
     char currentDir[PATH_MAX];
     std::string currentPath;
 
@@ -164,7 +164,7 @@ void SubmarineProgram::SetupShaders() {
 }
 
 void SubmarineProgram::LoadModels() {
-#ifdef _APPLE_
+#ifdef __APPLE__
     char currentDir[PATH_MAX];
     std::string currentPath;
 
@@ -415,7 +415,7 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
 
 void SubmarineProgram::RenderSkyboxAndLight() {
     glDepthFunc(GL_LEQUAL);
-    glm::vec3 color = day ? glm::vec3(0.69f, 0.87f, 1.0f) : glm::vec3(0.4f, 0.5f, 0.7f);
+    glm::vec3 color = day ? glm::vec3(0.69f, 0.87f, 1.0f) : glm::vec3(0.1f, 0.2f, 0.3f);
     skyboxShader->use();
     skyboxShader->SetVec3("color", color);
     //if(day)

@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include <GL/glew.h>
-#ifdef _APPLE_
+#ifdef __APPLE__
 #include <GLFW/glfw3.h>
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
@@ -14,7 +14,7 @@
 #include "Camera.h"
 
 #include <iostream>
-#ifdef _APPLE_
+#ifdef __APPLE__
 #define MAX_PATH 260
 #include <unistd.h>
 #else

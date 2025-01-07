@@ -1,11 +1,11 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
 
-in vec3 color;
 out vec3 Color;
 
 uniform mat4 projection;
 uniform mat4 view;
+uniform vec3 color;
 
 void main()
 {
