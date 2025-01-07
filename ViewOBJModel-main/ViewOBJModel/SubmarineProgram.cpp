@@ -83,26 +83,9 @@ void SubmarineProgram::SetupBuffers() {
     glBindVertexArray(cubeVAO);
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // normal attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // light VAO
-    glGenVertexArrays(1, &lightVAO);
-    glBindVertexArray(lightVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glGenVertexArrays(1, &skyboxVAO);
-    glBindVertexArray(skyboxVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
-
+    
     glGenFramebuffers(1, &depthMapFBO);
 
     glGenTextures(1, &depthMap);
@@ -213,7 +196,8 @@ void SubmarineProgram::Run() {
         UpdateFish(deltaTime);
         ProcessInput();
         RenderScene();
-
+        RenderSkyboxAndLight();
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -222,12 +206,12 @@ void SubmarineProgram::Run() {
 void SubmarineProgram::ProcessInput() {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
+    
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->ProcessKeyboard(1, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera->ProcessKeyboard(2, deltaTime);
-
+    
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         if (camera->getFreeLook()) camera->ProcessKeyboard(3, deltaTime);
         else camera->ProcessKeyboard(7, deltaTime);
@@ -236,43 +220,45 @@ void SubmarineProgram::ProcessInput() {
         if (camera->getFreeLook()) camera->ProcessKeyboard(4, deltaTime);
         else camera->ProcessKeyboard(8, deltaTime);
     }
-
+    
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         camera->ProcessKeyboard(5, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         camera->ProcessKeyboard(6, deltaTime);
-
+    
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
         day = false;
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
         day = true;
-
+    
     static bool wasXPressed = false;
-
+    
     bool xIsPressedNow = (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS);
-
+    
     if (!xIsPressedNow && wasXPressed) {
-        if (camera->getFreeLook()) 
+        if (camera->getFreeLook())
             camera->Set(1920, 1080, subSavedLocation);
         if(camera->thirdPerson())
             camera->changeFreeLook();
-    }
-    wasXPressed = xIsPressedNow;
-    
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !camera->getFreeLook())
-        camera->setCameraMode(1);
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !camera->getFreeLook())
-        camera->setCameraMode(2);
-    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && !camera->getFreeLook())
-        camera->setCameraMode(3);
-
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        if (camera->getFreeLook()) {
-            camera->Set(1920, 1080, subSavedLocation);
-            camera->changeFreeLook();
+        
+        wasXPressed = xIsPressedNow;
+        
+        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !camera->getFreeLook())
+            camera->setCameraMode(1);
+        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !camera->getFreeLook())
+            camera->setCameraMode(2);
+        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && !camera->getFreeLook())
+            camera->setCameraMode(3);
+        
+        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+            if (camera->getFreeLook()) {
+                camera->Set(1920, 1080, subSavedLocation);
+                camera->setCameraMode(3);
+                camera->changeFreeLook();
+            }
+            
+            camera->Reset(1920, 1080);
         }
-
-        camera->Reset(1920, 1080);
     }
 }
 
@@ -587,9 +573,7 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
 }
 
 void SubmarineProgram::RenderSkyboxAndLight() {
-    glDisable(GL_DEPTH_TEST);
-
-   // glDepthFunc(GL_LEQUAL);
+    glDepthFunc(GL_LEQUAL);
     glm::vec3 color = day ? glm::vec3(0.69f, 0.87f, 1.0f) : glm::vec3(0.1f, 0.2f, 0.3f);
     skyboxShader->use();
     skyboxShader->SetVec3("color", color);
@@ -598,7 +582,6 @@ void SubmarineProgram::RenderSkyboxAndLight() {
     glBindVertexArray(skyboxVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
-    glEnable(GL_DEPTH_TEST);
 
     glDepthFunc(GL_LESS);
     lampShader->use();
