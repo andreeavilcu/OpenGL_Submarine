@@ -22,6 +22,10 @@ public:
 	void ProcessMouseScroll(float yOffset);
 	void LockMouseToCenter(bool locked) { mouseLocked = locked; }
     
+    glm::vec3 GetRealForward() {
+        return glm::normalize(forward);
+    }
+
     glm::vec3 GetForward() {
         if (!freeLook) return glm::normalize(forward);
         
