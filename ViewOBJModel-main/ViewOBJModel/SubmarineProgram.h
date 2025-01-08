@@ -46,12 +46,13 @@ private:
 	unsigned int VBO, cubeVAO, lightVAO, skyboxVAO, depthMapFBO, depthMap;
 	Shader* lightingWithTextureShader, * lampShader, * skyboxShader, * shadowShader;
 	Model* submarineModel, * terrainModel, * jellyFishModel, * clownFishModel, * sunModel,
-		* angelFishModel, * koiFishModel, * waterModel;
+		* angelFishModel, * koiFishModel, * waterModel, * cloudModel;
 
 	std::vector<glm::vec3> fishPositions; // Pozițiile peștilor
 	std::vector<glm::vec3> fishVelocities; // Direcția și viteza fiecărui pește
 	std::vector<float> fishSwimAnimationTime; // Time tracker for each fish's swimming animation
 	std::vector<float> fishVerticalAnimationTime; // Time tracker for vertical oscillation
+	std::vector<glm::vec3> cloudPositions;
 
 	glm::vec3 lightPos;
 	glm::vec3 cubePos;
@@ -86,4 +87,6 @@ private:
 	void LoadModels();
 
 	void MouseCallback(double xpos, double ypos);
+
+	void InitializeClouds();
 };

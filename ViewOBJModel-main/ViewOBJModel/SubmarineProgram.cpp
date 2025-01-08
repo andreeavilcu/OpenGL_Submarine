@@ -18,6 +18,7 @@ void SubmarineProgram::Initialize() {
 	SetupShaders();
 	LoadModels();
 	InitializeFish(60);
+	InitializeClouds();
 
 	glfwSetWindowUserPointer(window, this);
 	glfwSetCursorPosCallback(window, [](GLFWwindow* w, double x, double y) {
@@ -174,6 +175,7 @@ void SubmarineProgram::LoadModels() {
 	angelFishModel = new Model(currentPath + "/Models/AngelFish/angelfish.obj", false);
 	sunModel = new Model(currentPath + "/Models/Moon/Moon.obj", false);
 	waterModel = new Model(currentPath + "/Models/Water/Water.obj", false);
+	cloudModel = new Model(currentPath + "/Models/Cloud/cloud.obj", false);
 
 	waterTextureID = CreateTexture(currentPath + "/Models/Water/image0.png");
 }
@@ -181,6 +183,20 @@ void SubmarineProgram::LoadModels() {
 void SubmarineProgram::MouseCallback(double xpos, double ypos)
 {
 	camera->MouseControl(xpos, ypos);
+}
+
+void SubmarineProgram::InitializeClouds() {
+	// Poziționează norii deasupra apei
+	glm::vec3 centerPoint = glm::vec3(0.f, 100.f, -100.f);
+
+	// Creează mai mulți nori în poziții aleatorii
+	for (int i = 0; i < 10; ++i) {
+		cloudPositions.push_back(glm::vec3(
+			centerPoint.x + (rand() % 800 - 400),  // ±400 unități pe X
+			centerPoint.y + (rand() % 60 - 30),    // ±30 unități pe Y
+			centerPoint.z + (rand() % 800 - 400)   // ±400 unități pe Z
+		));
+	}
 }
 
 void SubmarineProgram::Run() {
@@ -196,7 +212,6 @@ void SubmarineProgram::Run() {
 		UpdateFish(deltaTime);
 		ProcessInput();
 		RenderScene();
-		RenderSkyboxAndLight();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -560,6 +575,35 @@ void SubmarineProgram::RenderObjects(Shader* shader) {
 
 	DrawFish(fishPositions, fishVelocities, fishSwimAnimationTime, shader, jellyFishModel, clownFishModel, angelFishModel, koiFishModel);
 
+	lampShader->use();
+
+	lampShader->SetVec3("color", glm::vec3(1.0f));
+
+	lampShader->setMat4("projection", camera->GetProjectionMatrix());
+	lampShader->setMat4("view", camera->GetViewMatrix());
+	glm::mat4 lightModel = glm::translate(glm::mat4(1.0), lightPos);
+	lightModel = glm::scale(lightModel, glm::vec3(5.f));
+	lampShader->setMat4("model", lightModel);
+
+	sunModel->Draw(*lampShader);
+
+	if (!day)
+		lampShader->SetVec3("color", glm::vec3(0.2f));
+
+	for (const auto& position : cloudPositions) {
+		glm::mat4 cloudModelMatrix = glm::mat4(1.0f);
+		cloudModelMatrix = glm::translate(cloudModelMatrix, position);
+
+		// Scalează norii la dimensiunea dorită
+		cloudModelMatrix = glm::scale(cloudModelMatrix, glm::vec3(300.0f));
+
+		lampShader->setMat4("model", cloudModelMatrix);
+		cloudModel->Draw(*lampShader);
+	}
+
+	shader->use();
+
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -609,14 +653,6 @@ void SubmarineProgram::RenderSkyboxAndLight() {
 	glBindVertexArray(0);
 
 	glDepthFunc(GL_LESS);
-	lampShader->use();
-	lampShader->setMat4("projection", camera->GetProjectionMatrix());
-	lampShader->setMat4("view", camera->GetViewMatrix());
-	glm::mat4 lightModel = glm::translate(glm::mat4(1.0), lightPos);
-	lightModel = glm::scale(lightModel, glm::vec3(5.f));
-	lampShader->setMat4("model", lightModel);
-
-	sunModel->Draw(*lampShader);
 
 }
 
@@ -631,6 +667,7 @@ void SubmarineProgram::Cleanup() {
 	delete koiFishModel;
 	delete sunModel;
 	delete waterModel;
+	delete cloudModel;
 
 	glDeleteVertexArrays(1, &cubeVAO);
 	glDeleteVertexArrays(1, &lightVAO);
